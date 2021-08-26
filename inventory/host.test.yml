@@ -1,0 +1,6 @@
+all:
+  hosts:
+    ticketshop-test:
+      ansible_connection: local
+  vars:
+    ansible_python_interpreter: "{{ cffsible_dir }}/ansible-deps-cache/bin/python3"

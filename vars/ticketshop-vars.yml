@@ -1,0 +1,13 @@
+ticketshop_keybase_dir: /keybase/team/epfl_ticketshop
+
+_docker_openshift_repository: docker-registry.default.svc:5000
+
+_cadi_base_image_oc_namespace: dinfo-cicd
+_cadi_base_image_name: cadi-libs-idevfsd
+_cadi_base_image_tag: latest
+
+cadi_base_image_uri: >-
+  {{ _docker_openshift_repository }}/{{ _cadi_base_image_oc_namespace }}/{{ _cadi_base_image_name }}:{{ _cadi_base_image_tag }}
+
+ticketshop_image_name: ticketshop-idevfsd
+ticketshop_image_tag: preprod

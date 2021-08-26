@@ -1,0 +1,9 @@
+- include_vars: ticketshop-vars.yml
+  tags: always
+
+- include_tasks:
+    file: ticketshop-openshift-build-tasks.yml
+    apply:
+      tags:
+        - ticketshop.openshift-build
+  tags: always

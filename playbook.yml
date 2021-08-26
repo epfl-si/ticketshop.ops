@@ -1,0 +1,5 @@
+- name: Build TicketShop on OpenShift
+  hosts: all
+  gather_facts: no
+  roles:
+    - role: roles/ticketshop-openshift
