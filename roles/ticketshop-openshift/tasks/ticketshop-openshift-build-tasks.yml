@@ -5,8 +5,5 @@
       namespace: "{{ inventory_hostname }}"
       name: "{{ ticketshop_image_name }}"
     tag: "{{ ticketshop_image_tag }}"
-    from:
-      kind: DockerImage
-      name: "{{ cadi_base_image_uri }}"
     dockerfile: >-
       {{ lookup('template', 'Dockerfile') }}

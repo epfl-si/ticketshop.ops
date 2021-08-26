@@ -1,4 +1,4 @@
-FROM "{{ cadi_base_image_uri }}"
+FROM {{ cadi_base_image_uri }}
 
 RUN cpanm utf8::all
 
