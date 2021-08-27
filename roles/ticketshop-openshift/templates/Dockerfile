@@ -10,9 +10,8 @@ RUN sed -i \
     /usr/local/apache2/conf/httpd.conf
 
 COPY .ssh /root/.ssh
-RUN ls /root/.ssh
 
 WORKDIR /usr/local/apache2
 RUN git clone ssh://git@c4science.ch/diffusion/3794/ticketshop.git
-
-RUN ls
+{# Image gets squashed; see ../tasks/ticketshop-openshift-build-tasks.yml #}
+RUN rm -rf /root/.ssh

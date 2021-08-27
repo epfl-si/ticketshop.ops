@@ -34,6 +34,11 @@
         - secret:
             name: idevfsd-checkouter
           destinationDir: ".ssh"
+    strategy:
+      dockerStrategy:
+        # Squash the image, so that it doesn't contain the
+        # idevfsd-checkouter ssh key in its intermediate layers:
+        imageOptimizationPolicy: SkipLayers
     tag: "{{ ticketshop_image_tag }}"
   tags:
     - ticketshop.build
