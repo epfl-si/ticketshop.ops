@@ -1,9 +1,39 @@
+- name: "`idevfsd-checkouter` secret (ssh key pair)"
+  openshift:
+    state: latest
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: idevfsd-checkouter
+      namespace: '{{ ticketshop_os_namespace }}'
+    type: kubernetes.io/ssh-auth
+    data:
+      ssh-privatekey: '{{ _id_rsa | base64 }}'
+      id_rsa: '{{ _id_rsa | base64 }}'
+      known_hosts: '{{ _known_hosts | base64 }}'
+  vars:
+    # Be sure that `_id_rsa` ends with a newline, lest OpenShift silently fail
+    # to use it!
+    _id_rsa: |
+      {{ lookup("file", "{{ dinfo_build_cadi_libs_ssh_secret_key_path }}") }}
+
+    _known_hosts: '{{ lookup("pipe", "{{ dinfo_build_cadi_libs_ssh_known_hosts_cmd }} 2>/dev/null | sort") }}'
+  tags:
+    - ticketshop.checkouter
+
 - name: "Build {{ ticketshop_image_name }} from cadi-base-image"
   openshift_imagestream:
     state: latest
     metadata:
-      namespace: "{{ inventory_hostname }}"
+      namespace: "{{ ticketshop_os_namespace }}"
       name: "{{ ticketshop_image_name }}"
+    source:
+      dockerfile: >-
+        {{ lookup('template', 'Dockerfile') }}
+      secrets:
+        - secret:
+            name: idevfsd-checkouter
+          destinationDir: ".ssh"
     tag: "{{ ticketshop_image_tag }}"
-    dockerfile: >-
-      {{ lookup('template', 'Dockerfile') }}
+  tags:
+    - ticketshop.build
