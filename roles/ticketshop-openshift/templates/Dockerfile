@@ -1,6 +1,7 @@
 FROM {{ cadi_base_image_uri }}
 
-RUN cpanm utf8::all
+# Install perl dependancies needed for ticketshop
+RUN cpanm utf8::all HTML::Template JSON::SL
 
 # Enable apache modules. `headers` and `env` modules are enabled by default.
 RUN sed -i \
