@@ -34,5 +34,7 @@ RUN mkdir -p /usr/local/apache2/logs && \
 RUN mkdir -p /var/www/vhosts/ticketshop.epfl.ch/logs && \
     chmod 777 -R /var/www/vhosts/ticketshop.epfl.ch/logs
 
+WORKDIR /var/www/vhosts/ticketshop.epfl.ch
+
 {# Image gets squashed; see ../tasks/ticketshop-openshift-build-tasks.yml #}
 RUN rm -rf /root/.ssh
