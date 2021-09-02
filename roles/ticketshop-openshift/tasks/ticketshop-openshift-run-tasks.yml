@@ -1,0 +1,155 @@
+# Create the /opt/dinfo/etc/dbs.conf secret
+- name: "/opt/dinfo/etc/dbs.conf secret"
+  openshift:
+    state: latest
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ticketshop-secrets
+      namespace: '{{ openshift_namespace }}'
+    type: Opaque
+    data:
+      dbs.conf: '{{ _dbs_conf | base64 }}'
+  vars:
+    _dbs_conf: |
+      {% for k, el in keybase_secrets.cadi_dbs.items() %}
+      {{ k }}	{{ el.db_name }}	{{ el.db_host }}	{{ el.db_user }}	{{ el.db_pass }}
+      {% endfor %}
+  tags:
+    - ticketshop.dbs
+
+- name: Service
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: ticketshop-service
+        namespace: "{{ openshift_namespace }}"
+        labels:
+          app: ticketshop
+      spec:
+        ports:
+          - name: 8080-tcp
+            port: 8080
+            protocol: TCP
+            targetPort: 8080
+        selector:
+          deploymentconfig: ticketshop
+  tags:
+    - ticketshop.service
+
+- name: Route
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: route.openshift.io/v1
+      kind: Route
+      metadata:
+        name: ticketshop-route
+        namespace: "{{ openshift_namespace }}"
+        labels:
+          app: ticketshop
+          epfl.ch/visibility: public
+      spec:
+        host: "{{ ticketshop_hostname }}"
+        port:
+          targetPort: 8080-tcp
+        tls:
+          termination: edge
+        to:
+          kind: Service
+          name: ticketshop-service
+          weight: 100
+        wildcardPolicy: None
+  tags:
+    - ticketshop.route
+
+
+- name: Config Map
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: payonline-conf
+        namespace: "{{ openshift_namespace }}"
+      data:
+        SITE_URL: "{{ ticketshop_hostname }}"
+        TEQUILA_HOST: "{{ tequila_hostname }}"
+        TICKETSHOP_APACHE_CONF: "{{ lookup('template', 'ticketshop-apache-conf.j2') }}"
+  tags:
+    - ticketshop.config
+
+# - name: Promote image
+#   when:
+#     - >-
+#       inventory_environment == "prod"
+#     - >-
+#       "payonline.k8s.promote" in ansible_run_tags
+#   shell:
+#     cmd: |
+#       oc tag payonline-test/payonline:develop {{ openshift_namespace }}/payonline:{{ openshift_image_tag }}
+#   tags:
+#     - payonline.k8s.promote
+
+# https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/how_deployments_work.html#creating-a-deployment-configuration
+- name: Deployment Config
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: apps.openshift.io/v1
+      kind: DeploymentConfig
+      metadata:
+        name: ticketshop
+        namespace: "{{ openshift_namespace }}"
+        labels:
+          app: ticketshop
+      spec:
+        replicas: 1
+        selector:
+          app: ticketshop
+          deploymentconfig: ticketshop
+        template:
+          metadata:
+            labels:
+              app: ticketshop
+              deploymentconfig: ticketshop
+          spec:
+            containers:
+              - name: ticketshop
+                image: "docker-registry.default.svc:5000/{{ openshift_namespace }}/{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}"
+                ports:
+                  - containerPort: 8080
+                    protocol: "TCP"
+                imagePullPolicy: Always
+                volumeMounts:
+                  - name: ticketshop-apache-conf-volume
+                    mountPath: /usr/local/apache2/conf/25-ticketshop.epfl.ch.conf
+                    subPath: 25-ticketshop.epfl.ch.conf
+                envFrom:
+                  - configMapRef:
+                      name: payonline-conf
+            volumes:
+              - name: ticketshop-apache-conf-volume
+                configMap:
+                  name: payonline-conf
+                  items:
+                    - key: TICKETSHOP_APACHE_CONF
+                      path: 25-ticketshop.epfl.ch.conf
+        # triggers:
+        #   - type: ImageChange
+        #     imageChangeParams:
+        #       automatic: true
+        #       containerNames:
+        #         - ticketshop
+        #       from:
+        #         kind: ImageStreamTag
+        #         name: "payonline:{{ openshift_image_tag }}"
+        #         namespace: "{{ openshift_namespace }}"
+        #   - type: ConfigChange
+  tags:
+    - ticketshop.dc
+    - ticketshop.deploymentconfig

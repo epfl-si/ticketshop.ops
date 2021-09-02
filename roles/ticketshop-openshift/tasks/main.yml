@@ -7,3 +7,10 @@
       tags:
         - ticketshop.openshift-build
   tags: always
+
+- include_tasks:
+    file: ticketshop-openshift-run-tasks.yml
+    apply:
+      tags:
+        - ticketshop.openshift-run
+  tags: always
