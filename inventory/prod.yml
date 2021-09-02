@@ -1,0 +1,6 @@
+all:
+  hosts:
+    openshift-prod:
+      ansible_connection: local
+      ansible_python_interpreter: "{{ cffsible_dir }}/ansible-deps-cache/bin/python3"
+      inventory_environment: prod
