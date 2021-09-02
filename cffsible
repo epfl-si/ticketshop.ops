@@ -4,7 +4,7 @@
 #
 # Usage ("ansible-playbook" mode):
 #
-#   ./ansible/cffsible -l prod
+#   ./ansible/cffsible [--prod]
 #
 #
 # If you are unfamiliar with Ansible, read up on it at
@@ -50,12 +50,21 @@ platform_check () {
 }
 
 oc_check () {
-  if ! oc projects >/dev/null 2>&1; then
-    echo "Please login to openshift:"
-    oc login
-  fi
+    if ! oc projects >/dev/null 2>&1; then
+        echo "Please login to openshift:"
+        oc login
+    fi
 }
 
+inventory_mode="test"
+inventories () {
+    case "$inventory_mode" in
+        *test*) echo "-i inventory/test.yml" ;;
+    esac
+    case "$inventory_mode" in
+        *prod*) echo "-i inventory/prod.yml" ;;
+    esac
+}
 
 ###########################################################################
 
@@ -65,7 +74,10 @@ declare -a ansible_args
 ansible_args=(-e "cffsible_dir=$OLDPWD")
 
 while [ "$#" -gt 0 ]; do
-  case "$1" in
+    case "$1" in
+        --prod)
+            inventory_mode="$inventory_mode prod"
+            shift ;;
         -m) mode=ansible
             ansible_args+=("-m")
             shift ;;
@@ -85,11 +97,11 @@ set -e
 platform_check
 case "$mode" in
     ansible-playbook)
-        ansible-playbook $playbook_flags -i inventory/host.test.yml "${ansible_args[@]}" \
+        ansible-playbook $playbook_flags  $(inventories) "${ansible_args[@]}" \
                          $ansible_flags \
                          playbook.yml
         ;;
     ansible)
-        ansible inventory/host.test.yml $ansible_flags "${ansible_args[@]}"
+        ansible  $(inventories) $ansible_flags "${ansible_args[@]}"
         ;;
 esac
