@@ -17,7 +17,8 @@ ticketshop_hostname: >-
 
 ticketshop_vhost_dir: ticketshop.epfl.ch
 
-apache_conf_log_level: {{ "error" if inventory_environment == "prod" else  "debug" }}
+apache_conf_log_level: >-
+  {{ "error" if inventory_environment == "prod" else "debug" }}
   
   
 tequila_hostname: >-
