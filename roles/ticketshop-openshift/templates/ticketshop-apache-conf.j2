@@ -27,6 +27,6 @@
   ScriptAlias /cgi-bin/ "/var/www/vhosts/{{ ticketshop_vhost_dir }}/cgi-bin/"
 
   ## Server aliases
-  ServerAlias ticketshop-preprod
+  ServerAlias ""{{ ticketshop_hostname.split('.')[0] }}"
   ServerAlias "{{ ticketshop_hostname }}"
 </VirtualHost>
