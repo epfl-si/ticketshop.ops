@@ -33,6 +33,9 @@ RUN mkdir -p /usr/local/apache2/logs && \
     chmod 777 -R /usr/local/apache2/logs
 RUN mkdir -p /var/www/vhosts/ticketshop.epfl.ch/logs && \
     chmod 777 -R /var/www/vhosts/ticketshop.epfl.ch/logs
+RUN chown www-data:www-data -R /var/www/vhosts/ticketshop.epfl.ch/htdocs
+RUN chown www-data:www-data -R /var/www/vhosts/ticketshop.epfl.ch/cgi-bin
+RUN chown www-data:www-data -R /var/www/vhosts/ticketshop.epfl.ch/private
 
 WORKDIR /var/www/vhosts/ticketshop.epfl.ch
 
