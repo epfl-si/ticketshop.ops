@@ -8,6 +8,7 @@
 
   ## Directories, there should at least be a declaration for /var/www/vhosts/{{ ticketshop_vhost_dir }}/htdocs
   <Directory "/var/www/vhosts/{{ ticketshop_vhost_dir }}/cgi-bin/">
+    Require all granted
     Options +ExecCGI
     AddHandler cgi-script .cgi
   </Directory>
