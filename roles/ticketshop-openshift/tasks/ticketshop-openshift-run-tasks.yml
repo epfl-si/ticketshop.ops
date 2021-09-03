@@ -1,5 +1,6 @@
-# Create the /opt/dinfo/etc/dbs.conf secret
-- name: "/opt/dinfo/etc/dbs.conf secret"
+# Create the /opt/dinfo/etc/dbs.conf and 
+# /var/www/vhosts/ticketshop.epfl.ch/private/etc/access_conf secrets
+- name: "ticketshop secrets"
   openshift:
     state: latest
     apiVersion: v1
@@ -10,11 +11,15 @@
     type: Opaque
     data:
       dbs.conf: '{{ _dbs_conf | base64 }}'
+      access_params: '{{ _access_params | base64 }}'
   vars:
     _dbs_conf: |
       {% for k, el in keybase_secrets.cadi_dbs.items() %}
       {{ k }}	{{ el.db_name }}	{{ el.db_host }}	{{ el.db_user }}	{{ el.db_pass }}
       {% endfor %}
+    _access_params: |
+       $sap_user = '{{ keybase_secrets.sap.user }}';
+       $sap_pwd  = '{{ keybase_secrets.sap.password }}';
   tags:
     - ticketshop.dbs
 
@@ -129,6 +134,12 @@
                   - name: ticketshop-apache-conf-volume
                     mountPath: /usr/local/apache2/conf/25-ticketshop.epfl.ch.conf
                     subPath: 25-ticketshop.epfl.ch.conf
+                  - name: ticketshop-secrets
+                    mountPath: /opt/dinfo/etc/dbs.conf
+                    subPath: dbs.conf
+                  - name: ticketshop-secrets
+                    mountPath: "/var/www/vhosts/{{ ticketshop_vhost_dir }}/private/etc/access_params"
+                    subPath: access_params
                 envFrom:
                   - configMapRef:
                       name: payonline-conf
@@ -139,6 +150,9 @@
                   items:
                     - key: TICKETSHOP_APACHE_CONF
                       path: 25-ticketshop.epfl.ch.conf
+              - name: ticketshop-secrets
+                secret:
+                  secretName: ticketshop-secrets
         # triggers:
         #   - type: ImageChange
         #     imageChangeParams:
