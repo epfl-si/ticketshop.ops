@@ -6,19 +6,22 @@
   ## Vhost docroot
   DocumentRoot "/var/www/vhosts/{{ ticketshop_vhost_dir }}/htdocs"
 
+  <Directory "/var/www/vhosts/{{ ticketshop_vhost_dir }}/htdocs">
+    Require all granted
+  </Directory>
+
   ## Directories, there should at least be a declaration for /var/www/vhosts/{{ ticketshop_vhost_dir }}/htdocs
   <Directory "/var/www/vhosts/{{ ticketshop_vhost_dir }}/cgi-bin/">
     Require all granted
     Options +ExecCGI
     AddHandler cgi-script .cgi
   </Directory>
+  
+  ## Script alias directives
+  ScriptAlias /cgi-bin/ "/var/www/vhosts/{{ ticketshop_vhost_dir }}/cgi-bin/"
 
   ## Load additional static includes
   # Include "/var/www/vhosts/{{ ticketshop_vhost_dir }}/conf/*.conf"
-
-
-  ## Script alias directives
-  ScriptAlias /cgi-bin/ "/var/www/vhosts/{{ ticketshop_vhost_dir }}/cgi-bin/"
 
   ## Server aliases
   ServerAlias ""{{ ticketshop_hostname.split('.')[0] }}"
