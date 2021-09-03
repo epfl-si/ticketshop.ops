@@ -17,13 +17,6 @@
   # Include "/var/www/vhosts/{{ ticketshop_vhost_dir }}/conf/*.conf"
 
 
-  ## Logging
-  ErrorLog "/var/www/vhosts/{{ ticketshop_vhost_dir }}/logs/error.log"
-  LogLevel {{ apache_conf_log_level }}
-  ServerSignature Off
-  CustomLog "/var/www/vhosts/{{ ticketshop_vhost_dir }}/logs/access.log" "%V %a %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\" %T %D"
-
-
   ## Script alias directives
   ScriptAlias /cgi-bin/ "/var/www/vhosts/{{ ticketshop_vhost_dir }}/cgi-bin/"
 
