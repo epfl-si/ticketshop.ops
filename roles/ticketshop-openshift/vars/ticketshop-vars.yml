@@ -15,12 +15,14 @@ ticketshop_hostname: >-
       else "ticketshop-preprod.epfl.ch" if inventory_environment == "test"
       else "localhost" }}
 
+ticketshop_git_branch: >-
+  {{ "master" if inventory_environment == "prod" else "dev" }}
+
 ticketshop_vhost_dir: ticketshop.epfl.ch
 
 apache_conf_log_level: >-
   {{ "error" if inventory_environment == "prod" else "debug" }}
-  
-  
+
 tequila_hostname: >-
   {{ "tequila.epfl.ch" if inventory_environment == "prod"
       else "test-tequila.epfl.ch" if inventory_environment == "test"

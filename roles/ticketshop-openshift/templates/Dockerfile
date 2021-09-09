@@ -26,18 +26,22 @@ RUN mkdir -p /var/www/vhosts/
 # on secrets removal.
 COPY .ssh /root/.ssh
 WORKDIR /var/www/vhosts/
-RUN git clone ssh://git@c4science.ch/diffusion/3794/ticketshop.git ticketshop.epfl.ch
+RUN git clone --branch {{ ticketshop_git_branch }} ssh://git@c4science.ch/diffusion/3794/ticketshop.git {{ ticketshop_vhost_dir }}
+RUN cd {{ ticketshop_vhost_dir }} && git rev-parse --abbrev-ref HEAD && cat .git/HEAD
 
 # Ensure that the logs directory exists and is writable by apache
 RUN mkdir -p /usr/local/apache2/logs && \
     chmod 777 -R /usr/local/apache2/logs
-RUN mkdir -p /var/www/vhosts/ticketshop.epfl.ch/logs && \
-    chmod 777 -R /var/www/vhosts/ticketshop.epfl.ch/logs
-RUN chown www-data:www-data -R /var/www/vhosts/ticketshop.epfl.ch/htdocs
-RUN chown www-data:www-data -R /var/www/vhosts/ticketshop.epfl.ch/cgi-bin
-RUN chown www-data:www-data -R /var/www/vhosts/ticketshop.epfl.ch/private
+RUN mkdir -p /var/www/vhosts/{{ ticketshop_vhost_dir }}/logs && \
+    chmod 777 -R /var/www/vhosts/{{ ticketshop_vhost_dir }}/logs
+RUN chown www-data:www-data -R /var/www/vhosts/{{ ticketshop_vhost_dir }}/htdocs
+RUN chown www-data:www-data -R /var/www/vhosts/{{ ticketshop_vhost_dir }}/cgi-bin
+RUN chown www-data:www-data -R /var/www/vhosts/{{ ticketshop_vhost_dir }}/private
 
-WORKDIR /var/www/vhosts/ticketshop.epfl.ch
+WORKDIR /var/www/vhosts/{{ ticketshop_vhost_dir }}
+
+# Temp version marked
+RUN touch $(date "+%Y%m%d-%H%M%S")_deployed
 
 {# Image gets squashed; see ../tasks/ticketshop-openshift-build-tasks.yml #}
 RUN rm -rf /root/.ssh
