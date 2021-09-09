@@ -37,6 +37,9 @@ RUN mkdir -p /var/www/vhosts/{{ ticketshop_vhost_dir }}/logs && \
 RUN chown www-data:www-data -R /var/www/vhosts/{{ ticketshop_vhost_dir }}/htdocs
 RUN chown www-data:www-data -R /var/www/vhosts/{{ ticketshop_vhost_dir }}/cgi-bin
 RUN chown www-data:www-data -R /var/www/vhosts/{{ ticketshop_vhost_dir }}/private
+# Tequila's sessions directory
+RUN mkdir -p /var/www/vhosts/{{ ticketshop_vhost_dir }}/Tequila/Sessions && \
+    chmod 777 -R /var/www/vhosts/{{ ticketshop_vhost_dir }}/Tequila/Sessions
 
 WORKDIR /var/www/vhosts/{{ ticketshop_vhost_dir }}
 
