@@ -153,17 +153,17 @@
               - name: ticketshop-secrets
                 secret:
                   secretName: ticketshop-secrets
-        # triggers:
-        #   - type: ImageChange
-        #     imageChangeParams:
-        #       automatic: true
-        #       containerNames:
-        #         - ticketshop
-        #       from:
-        #         kind: ImageStreamTag
-        #         name: "payonline:{{ openshift_image_tag }}"
-        #         namespace: "{{ openshift_namespace }}"
-        #   - type: ConfigChange
+        triggers:
+          - type: ImageChange
+            imageChangeParams:
+              automatic: true
+              containerNames:
+                - ticketshop
+              from:
+                kind: ImageStreamTag
+                name: "{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}"
+                namespace: "{{ openshift_namespace }}"
+          - type: ConfigChange
   tags:
     - ticketshop.dc
     - ticketshop.deploymentconfig
