@@ -46,5 +46,34 @@
         # idevfsd-checkouter ssh key in its intermediate layers:
         imageOptimizationPolicy: SkipLayers
     tag: "{{ ticketshop_image_tag }}"
+  register: _ticketshop_imagestream
+  tags:
+    - ticketshop.is
+    - ticketshop.image
+    - ticketshop.imagestream
+
+- name: "Rebuild {{ ticketshop_image_name }} now"
+  shell:
+    cmd: "oc -n {{ openshift_namespace }} start-build ticketshop-idevfsd"
+  register: "_build_id"
+  when: >
+    (
+    _ticketshop_imagestream | default(False)
+    and
+    (_ticketshop_imagestream is changed)
+    )
+    or
+    "ticketshop.build" in ansible_run_tags
+  tags:
+    - ticketshop.build
+
+- debug:
+    msg:
+      - "You can follow the build logs with: "
+      - "oc logs -f bc/ticketshop-idevfsd --version={{ _build_id.stdout | regex_search('\\d+') }}"
+  when: >
+    "stdout" in _build_id
+    or
+    "ticketshop.build" in ansible_run_tags
   tags:
     - ticketshop.build
