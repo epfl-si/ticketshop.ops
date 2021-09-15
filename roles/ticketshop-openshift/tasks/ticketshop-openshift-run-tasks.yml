@@ -45,20 +45,20 @@
   tags:
     - ticketshop.service
 
-- name: Route
+- name: Routes
   community.kubernetes.k8s:
     state: present
     definition:
       apiVersion: route.openshift.io/v1
       kind: Route
       metadata:
-        name: ticketshop-route
+        name: "ticketshop-route-{{ item }}"
         namespace: "{{ openshift_namespace }}"
         labels:
           app: ticketshop
           epfl.ch/visibility: public
       spec:
-        host: "{{ ticketshop_hostname }}"
+        host: "{{ item }}"
         port:
           targetPort: 8080-tcp
         tls:
@@ -68,9 +68,9 @@
           name: ticketshop-service
           weight: 100
         wildcardPolicy: None
+  with_items: "{{ ticketshop_routes }}"
   tags:
-    - ticketshop.route
-
+    - ticketshop.routes
 
 - name: Config Map
   community.kubernetes.k8s:

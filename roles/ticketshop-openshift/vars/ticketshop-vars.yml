@@ -15,6 +15,11 @@ ticketshop_hostname: >-
       else "ticketshop-preprod.epfl.ch" if inventory_environment == "test"
       else "localhost" }}
 
+ticketshop_routes: >-
+  {{ ["ticketshop.epfl.ch"] if inventory_environment == "prod"
+      else ["test-ticketshop.epfl.ch", "ticketshop-preprod.epfl.ch"] if inventory_environment == "test"
+      else "localhost" }}
+
 ticketshop_git_branch: >-
   {{ "master" if inventory_environment == "prod" else "dev" }}
 
