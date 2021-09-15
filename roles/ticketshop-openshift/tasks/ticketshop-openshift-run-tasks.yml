@@ -164,6 +164,20 @@
                 name: "{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}"
                 namespace: "{{ openshift_namespace }}"
           - type: ConfigChange
+  register: _ticketshop_deploymentconfig
   tags:
     - ticketshop.dc
+    - ticketshop.deploy
+    - ticketshop.deploy.force
     - ticketshop.deploymentconfig
+
+- name: "Redeploy ticketshop now"
+  shell:
+    cmd: "oc -n {{ openshift_namespace }} rollout latest dc/ticketshop"
+  register: "_build_id"
+  when: >
+    _ticketshop_deploymentconfig is changed
+    or
+    "ticketshop.deploy.force" in ansible_run_tags
+  tags:
+    - ticketshop.deploy.force
