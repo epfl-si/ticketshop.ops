@@ -85,8 +85,10 @@
         SITE_URL: "{{ ticketshop_hostname }}"
         TEQUILA_HOST: "{{ tequila_hostname }}"
         TICKETSHOP_APACHE_CONF: "{{ lookup('template', 'ticketshop-apache-conf.j2') }}"
+        TICKETSHOP_ENVIRONMENT: "{{ inventory_environment }}"
   tags:
     - ticketshop.config
+    - ticketshop.cm
 
 # - name: Promote image
 #   when:

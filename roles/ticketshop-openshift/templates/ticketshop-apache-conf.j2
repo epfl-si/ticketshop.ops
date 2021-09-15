@@ -1,7 +1,7 @@
 <VirtualHost *:8080>
   ServerName {{ ticketshop_hostname }}
 
-  #SetEnv FAKE_TEQUILA ${FAKE_TEQUILA}
+  PassEnv TICKETSHOP_ENVIRONMENT
 
   ## Vhost docroot
   DocumentRoot "/var/www/vhosts/{{ ticketshop_vhost_dir }}/htdocs"
