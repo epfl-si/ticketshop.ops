@@ -22,6 +22,7 @@
        $sap_pwd  = '{{ keybase_secrets.sap.password }}';
   tags:
     - ticketshop.dbs
+    - ticketshop.secrets
 
 - name: Service
   community.kubernetes.k8s:
