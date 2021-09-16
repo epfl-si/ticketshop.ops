@@ -25,7 +25,7 @@
     - ticketshop.checkouter
 
 # Build a ticketshop image from cadi-base image and tag
-# it. Use os-docker-registry.epfl.ch/ticketshop-test/ticketshop-idevfsd:preprod
+# it. Use os-docker-registry.epfl.ch/ticketshop-test/ticketshop:preprod
 # to get it.
 - name: "Build {{ ticketshop_image_name }} from cadi-base-image"
   openshift_imagestream:
@@ -54,7 +54,7 @@
 
 - name: "Rebuild {{ ticketshop_image_name }} now"
   shell:
-    cmd: "oc -n {{ openshift_namespace }} start-build ticketshop-idevfsd"
+    cmd: "oc -n {{ openshift_namespace }} start-build ticketshop"
   register: "_build_id"
   when: >
     (
@@ -70,7 +70,7 @@
 - debug:
     msg:
       - "You can follow the build logs with: "
-      - "oc logs -f bc/ticketshop-idevfsd --version={{ _build_id.stdout | regex_search('\\d+') }}"
+      - "oc logs -f bc/ticketshop --version={{ _build_id.stdout | regex_search('\\d+') }}"
   when: >
     "stdout" in _build_id
     or
