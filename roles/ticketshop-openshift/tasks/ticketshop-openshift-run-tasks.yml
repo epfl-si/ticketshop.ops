@@ -91,17 +91,17 @@
     - ticketshop.config
     - ticketshop.cm
 
-# - name: Promote image
-#   when:
-#     - >-
-#       inventory_environment == "prod"
-#     - >-
-#       "payonline.k8s.promote" in ansible_run_tags
-#   shell:
-#     cmd: |
-#       oc tag payonline-test/payonline:develop {{ openshift_namespace }}/payonline:{{ openshift_image_tag }}
-#   tags:
-#     - payonline.k8s.promote
+- name: Promote {{ ticketshop_image_name }} image to production
+  when:
+    - >-
+      inventory_environment == "prod"
+    - >-
+      "ticketshop.promote" in ansible_run_tags
+  shell:
+    cmd: |
+      oc tag {{ openshift_namespace }}/{{ ticketshop_image_name }}:preprod {{ openshift_namespace }}/{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}
+  tags:
+    - ticketshop.promote
 
 # https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/how_deployments_work.html#creating-a-deployment-configuration
 - name: Deployment Config
