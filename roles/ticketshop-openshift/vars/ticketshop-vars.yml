@@ -40,7 +40,8 @@ cadi_base_image_uri: >-
   {{ _docker_openshift_repository }}/dinfo-cicd/{{ _cadi_base_image_name }}:{{ _cadi_base_image_tag }}
 
 ticketshop_image_name: ticketshop
-ticketshop_image_tag: preprod
+ticketshop_image_tag: >-
+  {{ "prod" if inventory_environment == "prod" else "preprod" }}
 
 dinfo_build_keybase_dir: "/keybase/team/epfl_si.build_common"
 _dinfo_keybase_build_secrets: >-
