@@ -1,7 +1,7 @@
 FROM {{ cadi_base_image_uri }}
 
 # Install perl dependencies needed for ticketshop
-RUN cpanm utf8::all HTML::Template JSON::SL XML::LibXML Net::CIDR
+RUN cpanm utf8::all HTML::Template JSON::SL XML::LibXML Net::CIDR LWP::Protocol::https
 
 # Enable apache modules. `headers` and `env` modules are enabled by default.
 # Make apache listen on port 8080
