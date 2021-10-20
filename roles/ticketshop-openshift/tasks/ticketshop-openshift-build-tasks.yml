@@ -70,7 +70,7 @@
 - debug:
     msg:
       - "You can follow the build logs with: "
-      - "oc logs -f bc/ticketshop --version={{ _build_id.stdout | regex_search('\\d+') }}"
+      - "oc logs -f bc/ticketshop --version={{ _build_id.stdout | regex_search('\\d+') }} -n {{ openshift_namespace }}"
   when: >
     "stdout" in _build_id
     or
