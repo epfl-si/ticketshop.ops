@@ -99,7 +99,7 @@
       "ticketshop.promote" in ansible_run_tags
   shell:
     cmd: |
-      oc tag {{ openshift_namespace }}/{{ ticketshop_image_name }}:preprod {{ openshift_namespace }}/{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}
+      oc tag ticketshop-test/{{ ticketshop_image_name }}:preprod {{ openshift_namespace }}/{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}
   tags:
     - ticketshop.promote
 
