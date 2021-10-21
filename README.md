@@ -13,6 +13,13 @@ convenient [suitcase], called [`cffsible`](./cffsible).
 1. Adds some secrets and config map, create a service, routes and a deployment config.
 1. If needed or asked, it will redeploy the pod.
 
+Detailled operations might look like:
+```
+./cffsible -vvv -t ticketshop.checkouter,ticketshop.is,ticketshop.build
+$ oc logs -f bc/ticketshop --version=NN -n ticketshop-test
+./cffsible -vvv -t ticketshop.promote --prod
+./cffsible -vvv -t ticketshop.secrets,ticketshop.routes,ticketshop.service,ticketshop.cm,ticketshop.dc --prod
+```
 
 ## Prerequisites
 
@@ -34,6 +41,7 @@ convenient [suitcase], called [`cffsible`](./cffsible).
 |`idevfsd-checkouter` secret (ssh) | `ticketshop.checkouter`                                                 |
 |Build image                       | `ticketshop.is`<br>`ticketshop.image`<br>`ticketshop.imagestream`       |
 |Rebuild now                       | `ticketshop.build`                                                      |
+|Promote                           | `ticketshop.promote`                                                    |
 
 
 
