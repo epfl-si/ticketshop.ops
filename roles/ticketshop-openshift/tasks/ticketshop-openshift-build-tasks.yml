@@ -6,7 +6,7 @@
     kind: Secret
     metadata:
       name: idevfsd-checkouter
-      namespace: '{{ openshift_namespace }}'
+      namespace: '{{ openshift_namespace.test }}'
       annotations:
         openshift.io/description: Add the SSH key for idevfsd-checkouter, used to git clone the project
     type: kubernetes.io/ssh-auth
@@ -21,6 +21,9 @@
       {{ lookup("file", "{{ dinfo_build_cadi_libs_ssh_secret_key_path }}") }}
 
     _known_hosts: '{{ lookup("pipe", "{{ dinfo_build_cadi_libs_ssh_known_hosts_cmd }} 2>/dev/null | sort") }}'
+  when:
+    - >-
+      inventory_environment != "prod"
   tags:
     - ticketshop.checkouter
 
@@ -31,7 +34,7 @@
   openshift_imagestream:
     state: latest
     metadata:
-      namespace: "{{ openshift_namespace }}"
+      namespace: "{{ openshift_namespace.test }}"
       name: "{{ ticketshop_image_name }}"
     source:
       dockerfile: >-
@@ -47,6 +50,9 @@
         imageOptimizationPolicy: SkipLayers
     tag: "{{ ticketshop_image_tag }}"
   register: _ticketshop_imagestream
+  when:
+    - >-
+      inventory_environment != "prod"
   tags:
     - ticketshop.is
     - ticketshop.image
@@ -54,26 +60,32 @@
 
 - name: "Rebuild {{ ticketshop_image_name }} now"
   shell:
-    cmd: "oc -n {{ openshift_namespace }} start-build ticketshop"
+    cmd: "oc -n {{ openshift_namespace.test }} start-build ticketshop"
   register: "_build_id"
-  when: >
-    (
-    _ticketshop_imagestream | default(False)
-    and
-    (_ticketshop_imagestream is changed)
-    )
-    or
-    "ticketshop.build" in ansible_run_tags
+  when:
+    - >
+      (
+        _ticketshop_imagestream | default(False)
+        and
+        (_ticketshop_imagestream is changed)
+      )
+      or
+      "ticketshop.build" in ansible_run_tags
+    - >-
+      inventory_environment != "prod"
   tags:
     - ticketshop.build
 
 - debug:
     msg:
       - "You can follow the build logs with: "
-      - "oc logs -f bc/ticketshop --version={{ _build_id.stdout | regex_search('\\d+') }} -n {{ openshift_namespace }}"
-  when: >
-    "stdout" in _build_id
-    or
-    "ticketshop.build" in ansible_run_tags
+      - "oc logs -f bc/ticketshop --version={{ _build_id.stdout | regex_search('\\d+') }} -n {{ openshift_namespace.test }}"
+  when:
+    - >
+      "stdout" in _build_id
+      or
+      "ticketshop.build" in ansible_run_tags
+    - >-
+      inventory_environment != "prod"
   tags:
     - ticketshop.build

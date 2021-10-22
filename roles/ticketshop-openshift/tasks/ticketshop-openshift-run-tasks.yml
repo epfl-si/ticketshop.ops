@@ -7,7 +7,7 @@
     kind: Secret
     metadata:
       name: ticketshop-secrets
-      namespace: '{{ openshift_namespace }}'
+      namespace: '{{ openshift_namespace.dyn }}'
     type: Opaque
     data:
       dbs.conf: '{{ _dbs_conf | base64 }}'
@@ -32,7 +32,7 @@
       kind: Service
       metadata:
         name: ticketshop-service
-        namespace: "{{ openshift_namespace }}"
+        namespace: "{{ openshift_namespace.dyn }}"
         labels:
           app: ticketshop
       spec:
@@ -54,7 +54,7 @@
       kind: Route
       metadata:
         name: "ticketshop-route-{{ item }}"
-        namespace: "{{ openshift_namespace }}"
+        namespace: "{{ openshift_namespace.dyn }}"
         labels:
           app: ticketshop
           epfl.ch/visibility: public
@@ -81,7 +81,7 @@
       kind: ConfigMap
       metadata:
         name: payonline-conf
-        namespace: "{{ openshift_namespace }}"
+        namespace: "{{ openshift_namespace.dyn }}"
       data:
         SITE_URL: "{{ ticketshop_hostname }}"
         TEQUILA_HOST: "{{ tequila_hostname }}"
@@ -99,7 +99,7 @@
       "ticketshop.promote" in ansible_run_tags
   shell:
     cmd: |
-      oc tag ticketshop-test/{{ ticketshop_image_name }}:preprod {{ openshift_namespace }}/{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}
+      oc tag {{ openshift_namespace.test }}/{{ ticketshop_image_name }}:preprod {{ openshift_namespace.prod }}/{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}
   tags:
     - ticketshop.promote
 
@@ -112,7 +112,7 @@
       kind: DeploymentConfig
       metadata:
         name: ticketshop
-        namespace: "{{ openshift_namespace }}"
+        namespace: "{{ openshift_namespace.dyn }}"
         labels:
           app: ticketshop
       spec:
@@ -128,7 +128,7 @@
           spec:
             containers:
               - name: ticketshop
-                image: "docker-registry.default.svc:5000/{{ openshift_namespace }}/{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}"
+                image: "docker-registry.default.svc:5000/{{ openshift_namespace.dyn }}/{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}"
                 ports:
                   - containerPort: 8080
                     protocol: "TCP"
@@ -165,7 +165,7 @@
               from:
                 kind: ImageStreamTag
                 name: "{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}"
-                namespace: "{{ openshift_namespace }}"
+                namespace: "{{ openshift_namespace.dyn }}"
           - type: ConfigChange
   register: _ticketshop_deploymentconfig
   tags:
@@ -176,7 +176,7 @@
 
 - name: "Redeploy ticketshop now"
   shell:
-    cmd: "oc -n {{ openshift_namespace }} rollout latest dc/ticketshop"
+    cmd: "oc -n {{ openshift_namespace.dyn }} rollout latest dc/ticketshop"
   register: "_build_id"
   when: >
     _ticketshop_deploymentconfig is changed
