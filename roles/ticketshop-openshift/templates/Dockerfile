@@ -26,7 +26,7 @@ RUN mkdir -p /var/www/vhosts/
 # on secrets removal.
 COPY .ssh /root/.ssh
 WORKDIR /var/www/vhosts/
-RUN git clone --branch {{ ticketshop_git_branch }} ssh://git@c4science.ch/diffusion/3794/ticketshop.git {{ ticketshop_vhost_dir }}
+RUN git clone --branch {{ ticketshop_git_branch.fix }} ssh://git@c4science.ch/diffusion/3794/ticketshop.git {{ ticketshop_vhost_dir }}
 RUN cd {{ ticketshop_vhost_dir }} && git rev-parse --abbrev-ref HEAD && cat .git/HEAD
 
 # Ensure that the logs directory exists and is writable by apache
