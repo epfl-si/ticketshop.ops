@@ -175,10 +175,12 @@
 - name: "Redeploy ticketshop now"
   shell:
     cmd: "oc -n {{ openshift_namespace }} rollout latest dc/ticketshop"
-  register: "_build_id"
+  register: "_redeploy"
   when: >
     _ticketshop_deploymentconfig is changed
     or
     "ticketshop.deploy.force" in ansible_run_tags
+  failed_when: >
+    _redeploy.rc != 0 and "already in progress" not in _redeploy.stderr
   tags:
     - ticketshop.deploy.force
