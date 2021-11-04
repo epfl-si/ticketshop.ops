@@ -105,68 +105,66 @@
 
 # https://docs.openshift.com/container-platform/3.11/dev_guide/deployments/how_deployments_work.html#creating-a-deployment-configuration
 - name: Deployment Config
-  community.kubernetes.k8s:
-    state: present
-    definition:
-      apiVersion: apps.openshift.io/v1
-      kind: DeploymentConfig
-      metadata:
-        name: ticketshop
-        namespace: "{{ openshift_namespace }}"
-        labels:
-          app: ticketshop
-      spec:
-        replicas: 1
-        selector:
-          app: ticketshop
-          deploymentconfig: ticketshop
-        template:
-          metadata:
-            labels:
-              app: ticketshop
-              deploymentconfig: ticketshop
-          spec:
-            containers:
-              - name: ticketshop
-                image: "docker-registry.default.svc:5000/{{ openshift_namespace }}/{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}"
-                ports:
-                  - containerPort: 8080
-                    protocol: "TCP"
-                imagePullPolicy: Always
-                volumeMounts:
-                  - name: ticketshop-apache-conf-volume
-                    mountPath: /usr/local/apache2/conf/25-ticketshop.epfl.ch.conf
-                    subPath: 25-ticketshop.epfl.ch.conf
-                  - name: ticketshop-secrets
-                    mountPath: /opt/dinfo/etc/dbs.conf
-                    subPath: dbs.conf
-                  - name: ticketshop-secrets
-                    mountPath: "/var/www/vhosts/{{ ticketshop_vhost_dir }}/private/etc/access_params"
-                    subPath: access_params
-                envFrom:
-                  - configMapRef:
-                      name: ticketshop-conf
-            volumes:
-              - name: ticketshop-apache-conf-volume
-                configMap:
-                  name: ticketshop-conf
-                  items:
-                    - key: TICKETSHOP_APACHE_CONF
-                      path: 25-ticketshop.epfl.ch.conf
-              - name: ticketshop-secrets
-                secret:
-                  secretName: ticketshop-secrets
-        triggers:
-          - type: ImageChange
-            imageChangeParams:
-              automatic: true
-              containerNames:
-                - ticketshop
-              from:
-                kind: ImageStreamTag
-                name: "{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}"
-                namespace: "{{ openshift_namespace }}"
-          - type: ConfigChange
+  openshift:
+    apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      name: ticketshop
+      namespace: "{{ openshift_namespace }}"
+      labels:
+        app: ticketshop
+    spec:
+      replicas: 1
+      selector:
+        app: ticketshop
+        deploymentconfig: ticketshop
+      template:
+        metadata:
+          labels:
+            app: ticketshop
+            deploymentconfig: ticketshop
+        spec:
+          containers:
+            - name: ticketshop
+              image: "docker-registry.default.svc:5000/{{ openshift_namespace }}/{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}"
+              ports:
+                - containerPort: 8080
+                  protocol: "TCP"
+              imagePullPolicy: Always
+              volumeMounts:
+                - name: ticketshop-apache-conf-volume
+                  mountPath: /usr/local/apache2/conf/25-ticketshop.epfl.ch.conf
+                  subPath: 25-ticketshop.epfl.ch.conf
+                - name: ticketshop-secrets
+                  mountPath: /opt/dinfo/etc/dbs.conf
+                  subPath: dbs.conf
+                - name: ticketshop-secrets
+                  mountPath: "/var/www/vhosts/{{ ticketshop_vhost_dir }}/private/etc/access_params"
+                  subPath: access_params
+              envFrom:
+                - configMapRef:
+                    name: ticketshop-conf
+          volumes:
+            - name: ticketshop-apache-conf-volume
+              configMap:
+                name: ticketshop-conf
+                items:
+                  - key: TICKETSHOP_APACHE_CONF
+                    path: 25-ticketshop.epfl.ch.conf
+            - name: ticketshop-secrets
+              secret:
+                secretName: ticketshop-secrets
+      triggers:
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - ticketshop
+            from:
+              kind: ImageStreamTag
+              name: "{{ ticketshop_image_name }}:{{ ticketshop_image_tag }}"
+              namespace: "{{ openshift_namespace }}"
+        - type: ConfigChange
   register: _ticketshop_deploymentconfig
   tags:
     - ticketshop.dc
