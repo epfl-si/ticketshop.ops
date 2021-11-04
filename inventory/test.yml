@@ -1,6 +1,7 @@
 all:
   hosts:
     openshift-test:
+      openshift_namespace: ticketshop-test
       ansible_connection: local
       ansible_python_interpreter: "{{ cffsible_dir }}/ansible-deps-cache/bin/python3"
       inventory_environment: test

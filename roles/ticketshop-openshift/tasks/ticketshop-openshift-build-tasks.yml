@@ -6,7 +6,7 @@
     kind: Secret
     metadata:
       name: idevfsd-checkouter
-      namespace: '{{ openshift_namespace.test }}'
+      namespace: '{{ openshift_namespace }}'
       annotations:
         openshift.io/description: Add the SSH key for idevfsd-checkouter, used to git clone the project
     type: kubernetes.io/ssh-auth
@@ -23,7 +23,7 @@
     _known_hosts: '{{ lookup("pipe", "{{ dinfo_build_cadi_libs_ssh_known_hosts_cmd }} 2>/dev/null | sort") }}'
   when:
     - >-
-      inventory_environment != "prod"
+      ticketshop_build_openshift_namespace == openshift_namespace
   tags:
     - ticketshop.checkouter
 
@@ -34,7 +34,7 @@
   openshift_imagestream:
     state: latest
     metadata:
-      namespace: "{{ openshift_namespace.test }}"
+      namespace: "{{ openshift_namespace }}"
       name: "{{ ticketshop_image_name }}"
     source:
       dockerfile: >-
@@ -52,7 +52,7 @@
   register: _ticketshop_imagestream
   when:
     - >-
-      inventory_environment != "prod"
+      ticketshop_build_openshift_namespace == openshift_namespace
   tags:
     - ticketshop.is
     - ticketshop.image
@@ -60,7 +60,7 @@
 
 - name: "Rebuild {{ ticketshop_image_name }} now"
   shell:
-    cmd: "oc -n {{ openshift_namespace.test }} start-build ticketshop"
+    cmd: "oc -n {{ openshift_namespace }} start-build ticketshop"
   register: "_build_id"
   when:
     - >
@@ -72,20 +72,20 @@
       or
       "ticketshop.build" in ansible_run_tags
     - >-
-      inventory_environment != "prod"
+      ticketshop_build_openshift_namespace == openshift_namespace
   tags:
     - ticketshop.build
 
 - debug:
     msg:
       - "You can follow the build logs with: "
-      - "oc logs -f bc/ticketshop --version={{ _build_id.stdout | regex_search('\\d+') }} -n {{ openshift_namespace.test }}"
+      - "oc logs -f bc/ticketshop --version={{ _build_id.stdout | regex_search('\\d+') }} -n {{ openshift_namespace }}"
   when:
     - >
       "stdout" in _build_id
       or
       "ticketshop.build" in ansible_run_tags
     - >-
-      inventory_environment != "prod"
+      ticketshop_build_openshift_namespace == openshift_namespace
   tags:
     - ticketshop.build

@@ -1,9 +1,3 @@
-openshift_namespace:
-  dyn: >-
-    {{ "ticketshop-" + inventory_environment }}
-  prod: ticketshop-prod
-  test: ticketshop-test
-
 keybase_secrets: >-
   {{       _keybase_secrets_prod    if inventory_environment == "prod"
       else _keybase_secrets_preprod if inventory_environment == "test"
@@ -30,6 +24,8 @@ ticketshop_git_branch:
 
 ticketshop_vhost_dir: ticketshop.epfl.ch
 
+ticketshop_build_openshift_namespace: ticketshop-test
+
 apache_conf_log_level: >-
   {{ "error" if inventory_environment == "prod" else "debug" }}
 
@@ -45,12 +41,10 @@ cadi_base_image_uri: >-
   {{ _docker_openshift_repository }}/dinfo-cicd/{{ _cadi_base_image_name }}:{{ _cadi_base_image_tag }}
 
 ticketshop_image_name: ticketshop
-ticketshop_image_tag:
-  dyn: >-
+ticketshop_image_tag: >-
     {{ "prod" if inventory_environment == "prod" else "preprod" }}
-  prod: prod
-  test: preprod
 
+dinfo_build_openshift_namespace: dinfo-cicd
 dinfo_build_keybase_dir: "/keybase/team/epfl_si.build_common"
 _dinfo_keybase_build_secrets: >-
   {{ lookup("file", "{{ dinfo_build_keybase_dir }}/build-secrets.yml") |
