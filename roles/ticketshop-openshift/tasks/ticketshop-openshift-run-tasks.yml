@@ -80,7 +80,7 @@
       apiVersion: v1
       kind: ConfigMap
       metadata:
-        name: payonline-conf
+        name: ticketshop-conf
         namespace: "{{ openshift_namespace }}"
       data:
         SITE_URL: "{{ ticketshop_hostname }}"
@@ -145,11 +145,11 @@
                     subPath: access_params
                 envFrom:
                   - configMapRef:
-                      name: payonline-conf
+                      name: ticketshop-conf
             volumes:
               - name: ticketshop-apache-conf-volume
                 configMap:
-                  name: payonline-conf
+                  name: ticketshop-conf
                   items:
                     - key: TICKETSHOP_APACHE_CONF
                       path: 25-ticketshop.epfl.ch.conf
