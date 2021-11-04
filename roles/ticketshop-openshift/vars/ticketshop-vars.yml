@@ -17,11 +17,6 @@ ticketshop_routes: >-
       else ["test-ticketshop.epfl.ch", "ticketshop-preprod.epfl.ch"] if inventory_environment == "test"
       else "localhost" }}
 
-ticketshop_git_branch:
-  dyn: >-
-    {{ "master" if inventory_environment == "prod" else "dev" }}
-  fix: master
-
 ticketshop_vhost_dir: ticketshop.epfl.ch
 
 ticketshop_build_openshift_namespace: ticketshop-test
