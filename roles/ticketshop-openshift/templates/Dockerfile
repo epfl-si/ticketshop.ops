@@ -13,6 +13,8 @@ RUN set -e -x; cd /var/www/vhosts; git clone https://github.com/epfl-si/ticketsh
 
 WORKDIR /var/www/vhosts/{{ ticketshop_vhost_dir }}
 
+RUN mv perllib/ticketshop_lib.pm /opt/dinfo/lib/perl/
+
 RUN cpanm --installdeps --notest . || ( cat /root/.cpanm/work/*/build.log; exit 1 )
 
 # Ensure that the logs and Tequila state directories exist and are writable by apache
