@@ -9,9 +9,9 @@ convenient [suitcase], called [`cffsible`](./cffsible).
 
 `./cffsible`
 
-1. Uses the «IDEV-FSD cadi base image» to build the ticketshop image, checkouting the code from [c4science].
-1. Adds some secrets and config map, create a service, routes and a deployment config.
-1. If needed or asked, it will redeploy the pod.
+1. Build the ticketshop image on top of `ghcr.io/epfl-si/common-web`, and the source code from https://github.com/epfl-si/ticketshop
+1. Adds some secrets and config map, creates a service, routes and a deployment config.
+1. If needed or asked, will redeploy the pod.
 
 Detailled operations might look like:
 ```

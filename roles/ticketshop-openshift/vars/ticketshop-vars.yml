@@ -30,11 +30,13 @@ tequila_hostname: >-
       else "localhost" }}
 
 _docker_openshift_repository: docker-registry.default.svc:5000
-_cadi_base_image_name: cadi-libs-idevfsd
-_cadi_base_image_tag: latest
-cadi_base_image_uri: >-
-  {{ _docker_openshift_repository }}/dinfo-cicd/{{ _cadi_base_image_name }}:{{ _cadi_base_image_tag }}
 
 ticketshop_image_name: ticketshop
 ticketshop_image_tag: >-
     {{ "prod" if inventory_environment == "prod" else "preprod" }}
+
+openshift_local_images_base: >-
+  docker-registry.default.svc:5000/{{ openshift_namespace }}
+ticketshop_base_image: >-
+  {{ "ghcr.io/epfl-si/common-web:1.6.0" |
+  parse_external_docker_tag(mirrored_base=openshift_local_images_base) }}

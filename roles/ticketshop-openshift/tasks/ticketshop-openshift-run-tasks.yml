@@ -133,7 +133,7 @@
               imagePullPolicy: Always
               volumeMounts:
                 - name: ticketshop-apache-conf-volume
-                  mountPath: /usr/local/apache2/conf/25-ticketshop.epfl.ch.conf
+                  mountPath: /etc/apache2/conf.d/25-ticketshop.epfl.ch.conf
                   subPath: 25-ticketshop.epfl.ch.conf
                 - name: ticketshop-secrets
                   mountPath: /opt/dinfo/etc/dbs.conf
