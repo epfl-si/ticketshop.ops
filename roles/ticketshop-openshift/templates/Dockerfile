@@ -6,6 +6,9 @@ RUN set -e -x; apt-get update ; \
     apt-get install -y --no-install-recommends libxml-libxml-perl; \
     rm -rf /var/lib/apt/lists/*
 
+# TODO: hoist this in parent image (https://github.com/epfl-si/common-web/pull/1)
+RUN cpanm Apache::DBI
+
 RUN set -e -x; cd /var/www/vhosts; git clone https://github.com/epfl-si/ticketshop {{ ticketshop_vhost_dir }}
 
 WORKDIR /var/www/vhosts/{{ ticketshop_vhost_dir }}
