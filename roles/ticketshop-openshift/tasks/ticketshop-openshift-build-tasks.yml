@@ -1,32 +1,3 @@
-# Add the SSH key for idevfsd-checkouter, used to git clone the project
-- name: "`idevfsd-checkouter` secret (ssh key pair)"
-  openshift:
-    state: latest
-    apiVersion: v1
-    kind: Secret
-    metadata:
-      name: idevfsd-checkouter
-      namespace: '{{ openshift_namespace }}'
-      annotations:
-        openshift.io/description: Add the SSH key for idevfsd-checkouter, used to git clone the project
-    type: kubernetes.io/ssh-auth
-    data:
-      ssh-privatekey: '{{ _id_rsa | base64 }}'
-      id_rsa: '{{ _id_rsa | base64 }}'
-      known_hosts: '{{ _known_hosts | base64 }}'
-  vars:
-    # Be sure that `_id_rsa` ends with a newline, lest OpenShift silently fail
-    # to use it!
-    _id_rsa: |
-      {{ lookup("file", "{{ dinfo_build_cadi_libs_ssh_secret_key_path }}") }}
-
-    _known_hosts: '{{ lookup("pipe", "{{ dinfo_build_cadi_libs_ssh_known_hosts_cmd }} 2>/dev/null | sort") }}'
-  when:
-    - >-
-      ticketshop_build_openshift_namespace == openshift_namespace
-  tags:
-    - ticketshop.checkouter
-
 # Build a ticketshop image from cadi-base image and tag
 # it. Use os-docker-registry.epfl.ch/ticketshop-test/ticketshop:preprod
 # to get it.
@@ -39,15 +10,6 @@
     source:
       dockerfile: >-
         {{ lookup('template', 'Dockerfile') }}
-      secrets:
-        - secret:
-            name: idevfsd-checkouter
-          destinationDir: ".ssh"
-    strategy:
-      dockerStrategy:
-        # Squash the image, so that it doesn't contain the
-        # idevfsd-checkouter ssh key in its intermediate layers:
-        imageOptimizationPolicy: SkipLayers
     tag: "{{ ticketshop_image_tag }}"
   register: _ticketshop_imagestream
   when:

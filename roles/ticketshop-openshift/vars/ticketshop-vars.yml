@@ -38,13 +38,3 @@ cadi_base_image_uri: >-
 ticketshop_image_name: ticketshop
 ticketshop_image_tag: >-
     {{ "prod" if inventory_environment == "prod" else "preprod" }}
-
-dinfo_build_openshift_namespace: dinfo-cicd
-dinfo_build_keybase_dir: "/keybase/team/epfl_si.build_common"
-_dinfo_keybase_build_secrets: >-
-  {{ lookup("file", "{{ dinfo_build_keybase_dir }}/build-secrets.yml") |
-     from_yaml }}
-dinfo_build_c4science_credentials: >-
-  {{ _dinfo_keybase_build_secrets.c4science_clone_credentials }}
-dinfo_build_cadi_libs_ssh_secret_key_path: "{{ dinfo_build_keybase_dir }}/id_rsa_c4science_idevfsd-checkouter"
-dinfo_build_cadi_libs_ssh_known_hosts_cmd: "ssh-keyscan c4science.ch"

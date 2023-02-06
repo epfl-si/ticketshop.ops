@@ -20,15 +20,6 @@ RUN echo "Include conf/25-ticketshop.epfl.ch.conf" \
 # Create the vhosts directory
 RUN mkdir -p /var/www/vhosts/
 
-# Copy the SSH private key for the idevfsd-checkouter (c4science), in order
-# to be able to git clone a private repo in /var/www/vhosts/ticketshop.epfl.ch.
-# Please read https://cloud.redhat.com/blog/how-to-squash-openshift-docker-build-layers-to-remove-secrets
-# on secrets removal.
-COPY .ssh /root/.ssh
-WORKDIR /var/www/vhosts/
-RUN git clone --branch {{ ticketshop_git_branch | default('master') }} ssh://git@c4science.ch/diffusion/3794/ticketshop.git {{ ticketshop_vhost_dir }}
-RUN cd {{ ticketshop_vhost_dir }} && git rev-parse --abbrev-ref HEAD && cat .git/HEAD
-
 # Ensure that the logs directory exists and is writable by apache
 RUN mkdir -p /usr/local/apache2/logs && \
     chmod 777 -R /usr/local/apache2/logs

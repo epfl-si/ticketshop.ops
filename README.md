@@ -15,7 +15,7 @@ convenient [suitcase], called [`cffsible`](./cffsible).
 
 Detailled operations might look like:
 ```
-./cffsible -vvv -t ticketshop.checkouter,ticketshop.is,ticketshop.build
+./cffsible -vvv -t ticketshop.is,ticketshop.build
 $ oc logs -f bc/ticketshop --version=NN -n ticketshop-test
 ./cffsible -vvv -t ticketshop.promote --prod
 ./cffsible -vvv -t ticketshop.secrets,ticketshop.routes,ticketshop.service,ticketshop.cm,ticketshop.dc --prod
@@ -38,7 +38,6 @@ $ oc logs -f bc/ticketshop --version=NN -n ticketshop-test
 |Config Map                        | `ticketshop.config`<br>`ticketshop.cm`                                  |
 |Deployment Config                 | `ticketshop.dc`<br>`ticketshop.deploy`<br>`ticketshop.deploymentconfig` |
 |Redeploy                          | `ticketshop.deploy.force`                                               |
-|`idevfsd-checkouter` secret (ssh) | `ticketshop.checkouter`                                                 |
 |Build image                       | `ticketshop.is`<br>`ticketshop.image`<br>`ticketshop.imagestream`       |
 |Rebuild now                       | `ticketshop.build`                                                      |
 |Promote                           | `ticketshop.promote`                                                    |
