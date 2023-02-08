@@ -3,7 +3,7 @@ FROM {{ ticketshop_base_image.mirrored }}
 USER 0
 
 RUN set -e -x; apt-get update ; \
-    apt-get install -y --no-install-recommends libxml-libxml-perl; \
+    apt-get install -y --no-install-recommends libxml-libxml-perl uuid-dev; \
     rm -rf /var/lib/apt/lists/*
 
 # TODO: hoist this in parent image (https://github.com/epfl-si/common-web/pull/1)
