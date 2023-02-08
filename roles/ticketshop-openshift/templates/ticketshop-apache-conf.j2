@@ -1,7 +1,10 @@
 ErrorLog /dev/stderr
-TransferLog /dev/stdout
 
 ScriptSock /home/dinfo/cgisock
+
+# TODO: hoist this in parent image (https://github.com/epfl-si/common-web/pull/2)
+LogFormat "%T %D %V %a %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"" camptocamp
+CustomLog /dev/stdout camptocamp
 
 <VirtualHost *:8080>
   ServerName {{ ticketshop_hostname }}
