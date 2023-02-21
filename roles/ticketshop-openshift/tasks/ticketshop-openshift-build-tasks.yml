@@ -71,9 +71,11 @@
     metadata:
       namespace: "{{ openshift_namespace }}"
       name: "{{ ticketshop_image_name }}"
+    from: "{{ ticketshop_base_image.mirrored }}"
     source:
-      dockerfile: >-
-        {{ lookup('template', 'Dockerfile') }}
+      git:
+        uri: "https://github.com/epfl-si/ticketshop"
+        ref: "master"
     tag: "{{ ticketshop_image_tag }}"
   register: _ticketshop_imagestream
   when:
