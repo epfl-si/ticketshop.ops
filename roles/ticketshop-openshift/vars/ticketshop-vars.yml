@@ -38,5 +38,5 @@ ticketshop_image_tag: >-
 openshift_local_images_base: >-
   docker-registry.default.svc:5000/{{ openshift_namespace }}
 ticketshop_base_image: >-
-  {{ "ghcr.io/epfl-si/common-web:1.6.0" |
+  {{ "ghcr.io/epfl-si/common-web:1.11.1" |
   parse_external_docker_tag(mirrored_base=openshift_local_images_base) }}
