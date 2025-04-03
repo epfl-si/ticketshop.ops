@@ -1,0 +1,82 @@
+- tags: always
+  include_vars: ../vars/image-vars.yml
+
+- name: Based Image Pull Secret
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/dockerconfigjson
+      metadata:
+        name: based-image-builder-pull-secret
+        namespace: "{{ openshift_namespace }}"
+      data:
+        .dockerconfigjson: "{{ based_image_builder_pull_secret_config | to_json | b64encode }}"
+
+- name: Builder Pull Secret
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/dockerconfigjson
+      metadata:
+        name: builder-pull-secret
+        namespace: "{{ openshift_namespace }}"
+      data:
+        .dockerconfigjson: "{{ builder_pull_secret_config | to_json | b64encode }}"
+
+- name: Service Account for Build Cloud
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: builder-ticketshop
+        namespace: "{{ openshift_namespace }}"
+      secrets:
+        - name: based-image-builder-pull-secret
+        - name: builder-pull-secret
+      # This is not supposed to be required (it worked without in
+      # OpenShift 4.14); but see
+      # https://access.redhat.com/solutions/7098226
+      imagePullSecrets:
+        - name: based-image-builder-pull-secret
+        - name: builder-pull-secret
+
+- name: Build Config
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: build.openshift.io/v1
+      kind: BuildConfig
+      metadata:
+        name: ticketshop
+        namespace: "{{ openshift_namespace }}"
+      spec:
+        serviceAccount: builder-ticketshop
+        source:
+          type: Git
+          git:
+            ref: "{{ ticketshop_git_branch }}"
+            uri: "{{ ticketshop_git_repository }}"
+        strategy:
+          type: Docker
+          dockerStrategy:
+            forcePull: true
+        triggers:
+          - type: ConfigChange
+        output:
+          to:
+            kind: DockerImage
+            name: "{{ quay_registry }}/{{ app_image_name }}:{{ app_image_tag }}"
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+
+- name: Start build
+  when: >-
+    "image.startbuild" in ansible_run_tags
+  shell:
+    cmd: "oc -n {{ openshift_namespace }} start-build --wait ticketshop"
+  tags:
+    - image.startbuild

@@ -1,0 +1,32 @@
+# Secrets source
+_keybase_secrets: 
+  prod: "{{ lookup('file', '/keybase/team/epfl_ticketshop/secrets-prod.yml') | from_yaml }}"
+  test: "{{ lookup('file', '/keybase/team/epfl_ticketshop/secrets-test.yml') | from_yaml }}"
+
+keybase_secrets: "{{ _keybase_secrets.get(inventory_environment, None) }}"
+
+# Hosts and routing
+ticketshop_hostname: >-
+  {{ "ticketshop.epfl.ch" if inventory_environment == "prod"
+    else "test-ticketshop.epfl.ch" }}
+
+ticketshop_vhost_dir: ticketshop.epfl.ch
+
+apache_conf_log_level: >-
+  {{ "error" if inventory_environment == "prod" else "debug" }}
+
+# Tequila
+tequila_hostname: tequila.epfl.ch
+
+# App
+quay_registry: quay-its.epfl.ch/svc0049
+app_image_name: ticketshop
+app_image_tag: prod
+
+_pull_robot_secrets: "{{ keybase_secrets.quay.pull_robot }}"
+_pull_robot_credential: "{{ _pull_robot_secrets.name }}:{{ _pull_robot_secrets.token }}"
+
+pull_secret_config:
+  auths:
+    "quay-its.epfl.ch":
+      "auth": "{{ _pull_robot_credential | b64encode }}"

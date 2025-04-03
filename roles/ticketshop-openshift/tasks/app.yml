@@ -1,0 +1,200 @@
+- name: Pull Secret
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/dockerconfigjson
+      metadata:
+        name: ticketshop-pull-secret
+        namespace: "{{ openshift_namespace }}"
+      data:
+        .dockerconfigjson: "{{ pull_secret_config | to_json | b64encode }}"
+
+- name: Service Account
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: ticketshop
+        namespace: "{{ openshift_namespace }}"
+      imagePullSecrets:
+        - name: ticketshop-pull-secret
+
+- name: Set _dbs_conf
+  set_fact:
+    _dbs_conf: |
+      {% for k, el in keybase_secrets.cadi_dbs.items() %}
+      {{ k }}	{{ el.db_name }}	{{ el.db_host }}	{{ el.db_user }}	{{ el.db_pass }}
+      {% endfor %}
+
+- name: Set _access_params
+  set_fact:
+    _access_params: |
+      $sap_user = '{{ keybase_secrets.sap.user }}';
+      $sap_pwd  = '{{ keybase_secrets.sap.password }}';
+
+- name: Secret
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: ticketshop-secrets
+        namespace: '{{ openshift_namespace }}'
+      type: Opaque
+      data:
+        dbs.conf: '{{ _dbs_conf | base64 }}'
+        access_params: '{{ _access_params | base64 }}'
+
+
+- name: Config Map
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: ticketshop-conf
+        namespace: "{{ openshift_namespace }}"
+      data:
+        SITE_URL: "{{ ticketshop_hostname }}"
+        TEQUILA_HOST: "{{ tequila_hostname }}"
+        TICKETSHOP_APACHE_CONF: "{{ lookup('template', 'ticketshop-apache-conf.j2') }}"
+        TICKETSHOP_ENVIRONMENT: "{{ inventory_environment }}"
+
+- name: Service
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftWebConsole
+        labels:
+          app: ticketshop
+        name: ticketshop-service
+        namespace: "{{ openshift_namespace }}"
+      spec:
+        ports:
+          - name: 8080-tcp
+            port: 8080
+            protocol: TCP
+            targetPort: 8080
+        selector:
+          app: ticketshop
+        type: ClusterIP
+
+- name: Routes
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: route.openshift.io/v1
+      kind: Route
+      metadata:
+        labels:
+          app: ticketshop
+          route: public
+        name: "{{ ticketshop_hostname }}"
+        namespace: "{{ openshift_namespace }}"
+        annotations:
+          haproxy.router.openshift.io/balance: roundrobin
+          haproxy.router.openshift.io/disable_cookies: 'true'
+      spec:
+        host: "{{ ticketshop_hostname }}"
+        to:
+          kind: Service
+          name: ticketshop-service
+          weight: 100
+        port:
+          targetPort: 8080-tcp
+        tls:
+          termination: edge
+          insecureEdgeTerminationPolicy: Redirect
+
+- name: Deployment
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: ticketshop
+        namespace: "{{ openshift_namespace }}"
+      spec:
+        replicas: 1
+        strategy:
+          type: RollingUpdate
+          rollingUpdate:
+            maxUnavailable: 0
+        selector:
+          matchLabels:
+            app: ticketshop
+        template:
+          metadata:
+            labels:
+              app: ticketshop
+          spec:
+            serviceAccountName: ticketshop
+            containers:
+              - image: "{{ quay_registry }}/{{ app_image_name }}:{{ app_image_tag }}"
+                imagePullPolicy: Always
+                name: ticketshop
+                ports:
+                  - containerPort: 8080
+                resources:
+                  requests:
+                    cpu: "500m"
+                    memory: "1Gi"
+                  limits:
+                    cpu: "1"
+                    memory: "1Gi"
+                envFrom:
+                  - configMapRef:
+                      name: ticketshop-conf
+                livenessProbe:
+                  tcpSocket:
+                    port: 8080
+                  initialDelaySeconds: 15
+                  timeoutSeconds: 10
+                  periodSeconds: 20
+                readinessProbe:
+                  tcpSocket:
+                    port: 8080
+                  initialDelaySeconds: 15
+                  timeoutSeconds: 10
+                  periodSeconds: 10
+                volumeMounts:
+                  - name: ticketshop-apache-conf-volume
+                    mountPath: /etc/apache2/conf.d/25-ticketshop.epfl.ch.conf
+                    subPath: 25-ticketshop.epfl.ch.conf
+                  - name: ticketshop-secrets
+                    mountPath: /opt/dinfo/etc/dbs.conf
+                    subPath: dbs.conf
+                  - name: ticketshop-secrets
+                    mountPath: "/var/www/vhosts/{{ ticketshop_vhost_dir }}/private/etc/access_params"
+                    subPath: access_params
+            volumes:
+              - name: ticketshop-apache-conf-volume
+                configMap:
+                  name: ticketshop-conf
+                  items:
+                    - key: TICKETSHOP_APACHE_CONF
+                      path: 25-ticketshop.epfl.ch.conf
+              - name: ticketshop-secrets
+                secret:
+                  secretName: ticketshop-secrets
+
+- name: App restart
+  when: >-
+    "app.restart" in ansible_run_tags
+  kubernetes.core.k8s:
+    state: patched
+    kind: Deployment
+    definition:
+      metadata:
+        name: ticketshop
+        namespace: "{{ openshift_namespace }}"
+      spec:
+        template:
+          metadata:
+            annotations:
+              last-restart: "{{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}"
+  tags: app.restart
