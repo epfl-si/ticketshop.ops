@@ -1,16 +1,21 @@
-- include_vars: ticketshop-vars.yml
-  tags: always
-
-- include_tasks:
-    file: ticketshop-openshift-build-tasks.yml
+- name: "TicketShop - Image"
+  when:
+    - inventory_environment == "test"
+  include_tasks:
+    file: image.yml
     apply:
       tags:
-        - ticketshop.openshift-build
-  tags: always
+        - image
+  tags:
+    - image
+    - image.startbuild
 
-- include_tasks:
-    file: ticketshop-openshift-run-tasks.yml
+- name: "TicketShop - App"
+  include_tasks:
+    file: app.yml
     apply:
       tags:
-        - ticketshop.openshift-run
-  tags: always
+        - app
+  tags: 
+    - app
+    - app.restart

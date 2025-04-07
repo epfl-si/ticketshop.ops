@@ -1,0 +1,16 @@
+_based_image_pull_registry_secrets: "{{ keybase_secrets.github.pull_registry_credential }}"
+_based_image_pull_registry_credential: "{{ _based_image_pull_registry_secrets.name }}:{{ _based_image_pull_registry_secrets.token }}"
+based_image_builder_pull_secret_config:
+  auths:
+    "ghcr.io":
+      "auth": "{{ _based_image_pull_registry_credential | b64encode }}"
+
+_pull_robot_builder_secrets: "{{ keybase_secrets.quay.pull_robot_builder }}"
+_pull_robot_builder_credential: "{{ _pull_robot_builder_secrets.name }}:{{ _pull_robot_builder_secrets.token }}"
+builder_pull_secret_config:
+  auths:
+    "quay-its.epfl.ch":
+      "auth": "{{ _pull_robot_builder_credential | b64encode }}"
+
+ticketshop_git_repository: https://github.com/epfl-si/ticketshop
+ticketshop_git_branch: master

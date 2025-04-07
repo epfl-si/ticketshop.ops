@@ -1,7 +1,7 @@
 all:
   hosts:
     openshift-prod:
-      openshift_namespace: ticketshop-prod
+      openshift_namespace: svc0049p-ticketshop
       ansible_connection: local
-      ansible_python_interpreter: "{{ cffsible_dir }}/ansible-deps-cache/bin/python3"
+      ansible_python_interpreter: "{{ ansible_playbook_python }}"
       inventory_environment: prod
