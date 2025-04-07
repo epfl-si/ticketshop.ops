@@ -13,4 +13,4 @@ builder_pull_secret_config:
       "auth": "{{ _pull_robot_builder_credential | b64encode }}"
 
 ticketshop_git_repository: https://github.com/epfl-si/ticketshop
-ticketshop_git_branch: fix/temporary-fix-os4
+ticketshop_git_branch: master
