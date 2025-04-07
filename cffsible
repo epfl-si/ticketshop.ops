@@ -71,7 +71,7 @@ while [ "$#" -gt 0 ]; do
         --prod)
             inventory_mode="prod"
             cluster_url="https://api.ocpitsp0001.xaas.epfl.ch:6443"
-            namespace="svc0049t-ticketshop"
+            namespace="svc0049p-ticketshop"
             shift ;;
         *)
             ansible_args+=("$1")
