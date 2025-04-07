@@ -47,7 +47,6 @@
         dbs.conf: '{{ _dbs_conf | base64 }}'
         access_params: '{{ _access_params | base64 }}'
 
-
 - name: Config Map
   kubernetes.core.k8s:
     definition:
