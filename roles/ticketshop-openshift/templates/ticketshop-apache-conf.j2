@@ -7,7 +7,7 @@ LogFormat "%T %D %V %a %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"
 CustomLog /dev/stdout camptocamp
 
 RemoteIPHeader X-Forwarded-For
-RemoteIPInternalProxy 172.31.0.0/16 10.180.21.231 10.180.21.232 10.180.21.233 10.180.21.244
+RemoteIPInternalProxy 128.178.211.0/24 10.20.0.0/16
 
 <VirtualHost *:8080>
   ServerName {{ ticketshop_hostname }}
