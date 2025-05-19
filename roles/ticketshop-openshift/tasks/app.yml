@@ -143,7 +143,6 @@
                     cpu: "200m"
                     memory: "512Mi"
                   limits:
-                    cpu: "400m"
                     memory: "1Gi"
                 envFrom:
                   - configMapRef:
