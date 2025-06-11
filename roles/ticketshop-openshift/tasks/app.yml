@@ -140,10 +140,10 @@
                   - containerPort: 8080
                 resources:
                   requests:
-                    cpu: "200m"
-                    memory: "512Mi"
+                    cpu: "{{ '60m' if inventory_environment == 'prod' else '10m' }}"
+                    memory: "{{ '1280Mi' if inventory_environment == 'prod' else '380Mi' }}"
                   limits:
-                    memory: "1Gi"
+                    memory: "{{ '1280Mi' if inventory_environment == 'prod' else '380Mi' }}"
                 envFrom:
                   - configMapRef:
                       name: ticketshop-conf
