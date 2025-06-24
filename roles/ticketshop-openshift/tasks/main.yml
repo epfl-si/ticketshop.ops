@@ -19,3 +19,12 @@
   tags: 
     - app
     - app.restart
+
+- name: "TicketShop - Database"
+  include_tasks:
+    file: database.yml
+    apply:
+      tags:
+        - database
+  tags:
+    - database

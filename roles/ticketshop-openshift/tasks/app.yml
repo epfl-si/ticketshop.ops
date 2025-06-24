@@ -21,19 +21,6 @@
       imagePullSecrets:
         - name: ticketshop-pull-secret
 
-- name: Set _dbs_conf
-  set_fact:
-    _dbs_conf: |
-      {% for k, el in keybase_secrets.cadi_dbs.items() %}
-      {{ k }}	{{ el.db_name }}	{{ el.db_host }}	{{ el.db_user }}	{{ el.db_pass }}
-      {% endfor %}
-
-- name: Set _access_params
-  set_fact:
-    _access_params: |
-      $sap_user = '{{ keybase_secrets.sap.user }}';
-      $sap_pwd  = '{{ keybase_secrets.sap.password }}';
-
 - name: Secret
   kubernetes.core.k8s:
     definition:
@@ -44,22 +31,16 @@
         namespace: '{{ openshift_namespace }}'
       type: Opaque
       data:
-        dbs.conf: '{{ _dbs_conf | base64 }}'
-        access_params: '{{ _access_params | base64 }}'
-
-- name: Config Map
-  kubernetes.core.k8s:
-    definition:
-      apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: ticketshop-conf
-        namespace: "{{ openshift_namespace }}"
-      data:
-        SITE_URL: "{{ ticketshop_hostname }}"
-        TEQUILA_HOST: "{{ tequila_hostname }}"
-        TICKETSHOP_APACHE_CONF: "{{ lookup('template', 'ticketshop-apache-conf.j2') }}"
-        TICKETSHOP_ENVIRONMENT: "{{ inventory_environment }}"
+        api_username: '{{ keybase_secrets.api_username | b64encode }}'
+        api_password: '{{ keybase_secrets.api_password | b64encode }}'
+        auth_entra_id: '{{ keybase_secrets.auth_entra_id | b64encode }}'
+        auth_entra_secret: '{{ keybase_secrets.auth_entra_secret | b64encode }}'
+        auth_entra_issuer: '{{ keybase_secrets.auth_entra_issuer | b64encode }}'
+        auth_graph_api_url: '{{ keybase_secrets.auth_graph_api_url | b64encode }}'
+        auth_secret: '{{ keybase_secrets.auth_secret | b64encode }}'
+        dfs_username: '{{ keybase_secrets.dfs_username | b64encode }}'
+        dfs_password: '{{ keybase_secrets.dfs_password | b64encode }}'
+        auth_url: '{{ keybase_secrets.auth_url | b64encode }}'
 
 - name: Service
   kubernetes.core.k8s:
@@ -75,10 +56,10 @@
         namespace: "{{ openshift_namespace }}"
       spec:
         ports:
-          - name: 8080-tcp
-            port: 8080
+          - name: 3000-tcp
+            port: 3000
             protocol: TCP
-            targetPort: 8080
+            targetPort: 3000
         selector:
           app: ticketshop
         type: ClusterIP
@@ -104,7 +85,7 @@
           name: ticketshop-service
           weight: 100
         port:
-          targetPort: 8080-tcp
+          targetPort: 3000-tcp
         tls:
           termination: edge
           insecureEdgeTerminationPolicy: Redirect
@@ -137,7 +118,63 @@
                 imagePullPolicy: Always
                 name: ticketshop
                 ports:
-                  - containerPort: 8080
+                  - containerPort: 3000
+                env:
+                  - name: API_USERNAME
+                    valueFrom:
+                      secretKeyRef:
+                        name: ticketshop-secrets
+                        key: api_username
+                  - name: API_PASSWORD
+                    valueFrom:
+                      secretKeyRef:
+                        name: ticketshop-secrets
+                        key: api_password
+                  - name: AUTH_MICROSOFT_ENTRA_ID_ID
+                    valueFrom:
+                      secretKeyRef:
+                        name: ticketshop-secrets
+                        key: auth_entra_id
+                  - name: AUTH_MICROSOFT_ENTRA_ID_SECRET
+                    valueFrom:
+                      secretKeyRef:
+                        name: ticketshop-secrets
+                        key: auth_entra_secret
+                  - name: AUTH_MICROSOFT_ENTRA_ID_ISSUER
+                    valueFrom:
+                      secretKeyRef:
+                        name: ticketshop-secrets
+                        key: auth_entra_issuer
+                  - name: AUTH_MICROSOFT_GRAPH_API_URL
+                    valueFrom:
+                      secretKeyRef:
+                        name: ticketshop-secrets
+                        key: auth_graph_api_url
+                  - name: AUTH_SECRET 
+                    valueFrom:
+                      secretKeyRef:
+                        name: ticketshop-secrets
+                        key: auth_secret
+                  - name: DFS_USERNAME
+                    valueFrom:
+                      secretKeyRef:
+                        name: ticketshop-secrets
+                        key: dfs_username
+                  - name: DFS_PASSWORD
+                    valueFrom:
+                      secretKeyRef:
+                        name: ticketshop-secrets
+                        key: dfs_password
+                  - name: AUTH_URL
+                    valueFrom:
+                      secretKeyRef:
+                        name: ticketshop-secrets
+                        key: auth_url
+                  - name: DATABASE_URL
+                    valueFrom:
+                      secretKeyRef:
+                          name: postgres-cluster-app
+                          key: uri
                 resources:
                   requests:
                     cpu: "{{ '60m' if inventory_environment == 'prod' else '10m' }}"
@@ -149,36 +186,16 @@
                       name: ticketshop-conf
                 livenessProbe:
                   tcpSocket:
-                    port: 8080
+                    port: 3000
                   initialDelaySeconds: 15
                   timeoutSeconds: 10
                   periodSeconds: 20
                 readinessProbe:
                   tcpSocket:
-                    port: 8080
+                    port: 3000
                   initialDelaySeconds: 15
                   timeoutSeconds: 10
                   periodSeconds: 10
-                volumeMounts:
-                  - name: ticketshop-apache-conf-volume
-                    mountPath: /etc/apache2/conf.d/25-ticketshop.epfl.ch.conf
-                    subPath: 25-ticketshop.epfl.ch.conf
-                  - name: ticketshop-secrets
-                    mountPath: /opt/dinfo/etc/dbs.conf
-                    subPath: dbs.conf
-                  - name: ticketshop-secrets
-                    mountPath: "/var/www/vhosts/{{ ticketshop_vhost_dir }}/private/etc/access_params"
-                    subPath: access_params
-            volumes:
-              - name: ticketshop-apache-conf-volume
-                configMap:
-                  name: ticketshop-conf
-                  items:
-                    - key: TICKETSHOP_APACHE_CONF
-                      path: 25-ticketshop.epfl.ch.conf
-              - name: ticketshop-secrets
-                secret:
-                  secretName: ticketshop-secrets
 
 - name: App restart
   when: >-
