@@ -19,7 +19,7 @@ spec:
       serviceAccountName: ticketshop
       containers:
         - name: ticketshop
-          image: quay-its.epfl.ch/svc0049/ticketshop:2.1.0
+          image: quay-its.epfl.ch/svc0049/ticketshop:4404521-dev 
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
