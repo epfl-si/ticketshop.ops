@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ticketshop
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: ticketshop
+  template:
+    metadata:
+      labels:
+        app: ticketshop
+    spec:
+      serviceAccountName: ticketshop
+      containers:
+        - name: ticketshop
+          image: quay-its.epfl.ch/svc0049/ticketshop:2.1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: ticketshop-secrets
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "380Mi"
+            limits:
+              memory: "380Mi"
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 15
+            timeoutSeconds: 10
+            periodSeconds: 20
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 15
+            timeoutSeconds: 10
+            periodSeconds: 10
