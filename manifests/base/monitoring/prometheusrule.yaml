@@ -1,0 +1,129 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ticketShop-alerts
+  labels:
+    app: ticketShop
+spec:
+  groups:
+    - name: ticketShop-pod-alerts
+      rules:
+        - alert: "TicketShopPodRestartingTooOften"
+          expr: >
+            increase(kube_pod_container_status_restarts_total{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}[30m]) > 3
+          for: 5m
+          labels:
+            severity: critical
+            sendto: telegram
+            app: "ticketsop"
+          annotations:
+            summary: "TicketShop application pod restarting too often"
+            description: >-
+              The TicketShop application pod has restarted more than 3 times in the last 30 minutes.
+
+        - alert: "TicketShopPodMissing"
+          expr: >
+            absent(kube_pod_info{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}) == 1
+          for: 15s
+          labels:
+            severity: critical
+            sendto: telegram
+            app: "ticketsop"
+          annotations:
+            summary: "TicketShop application pod is missing"
+            description: >-
+              No TicketShop application pod is running for more than 15 seconds.
+
+        - alert: "TicketShopPodNotReady"
+          expr: >
+            sum by (pod) (kube_pod_status_phase{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*", phase=~"Running|Pending"}) > 0
+            and
+            sum by (pod) (kube_pod_status_ready{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*", condition="true"}) == 0
+          for: 45s
+          labels:
+            severity: critical
+            sendto: telegram
+            app: "ticketsop"
+          annotations:
+            summary: "TicketShop application pod is not ready"
+            description: >-
+              The TicketShop application pod is running but not ready for more than 45 seconds.
+
+        - alert: "TicketShopHighMemoryUsage"
+          expr: >
+            (container_memory_usage_bytes{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"} / container_spec_memory_limit_bytes{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}) * 100 > 85
+          for: 5m
+          labels:
+            severity: warning
+            sendto: telegram
+            app: "ticketsop"
+          annotations:
+            summary: "TicketShop application pod high memory usage"
+            description: >-
+              The TicketShop application pod {{ $labels.pod }} is using more than 85% of its memory limit for more than 5 minutes.
+
+        - alert: "TicketShopHighCPUUsage"
+          expr: >
+            (rate(container_cpu_usage_seconds_total{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}[5m]) / container_spec_cpu_quota{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"} * container_spec_cpu_period{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}) * 100 > 80
+          for: 5m
+          labels:
+            severity: warning
+            sendto: telegram
+            app: "ticketsop"
+          annotations:
+            summary: "TicketShop application pod high CPU usage"
+            description: >-
+              The TicketShop application pod {{ $labels.pod }} is using more than 80% of its CPU limit for more than 5 minutes.
+
+        - alert: "TicketShopPodCrashLooping"
+          expr: >
+            rate(kube_pod_container_status_restarts_total{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}[15m]) > 0
+          for: 5m
+          labels:
+            severity: critical
+            sendto: telegram
+            app: "ticketsop"
+          annotations:
+            summary: "TicketShop application pod is crash looping"
+            description: >-
+              The TicketShop application pod {{ $labels.pod }} is in a crash loop, restarting continuously.
+
+        # Alertes supplémentaires
+        - alert: "TicketShopPodOOMKilled"
+          expr: >
+            (kube_pod_container_status_last_terminated_reason{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*", reason="OOMKilled"} == 1)
+          for: 1m
+          labels:
+            severity: critical
+            sendto: telegram
+            app: "ticketsop"
+          annotations:
+            summary: "TicketShop application pod killed due to OOM"
+            description: >-
+              The TicketShop application pod {{ $labels.pod }} was killed due to Out Of Memory.
+
+        - alert: "TicketShopPodImagePullError"
+          expr: >
+            kube_pod_container_status_waiting_reason{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*", reason=~"ImagePullBackOff|ErrImagePull"} == 1
+          for: 5m
+          labels:
+            severity: warning
+            sendto: telegram
+            app: "ticketsop"
+          annotations:
+            summary: "TicketShop application pod image pull error"
+            description: >-
+              The TicketShop application pod {{ $labels.pod }} cannot pull its container image.
+
+        - alert: "TicketShopPodPending"
+          expr: >
+            kube_pod_status_phase{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*", phase="Pending"} == 1
+          for: 10m
+          labels:
+            severity: warning
+            sendto: telegram
+            app: "ticketsop"
+          annotations:
+            summary: "TicketShop application pod stuck in pending state"
+            description: >-
+              The TicketShop application pod {{ $labels.pod }} has been in pending state for more than 10 minutes.
