@@ -41,11 +41,9 @@ spec:
               {{- end }}
             {{- end }}
             *Issue detected:* {{ $first.Annotations.summary }}
-            *Application:* {{ $first.Labels.app }}
             {{- if $first.Labels.pod }}
             *Pod:* {{ $first.Labels.pod }}
             {{- end }}
-            *Namespace:* {{ $first.Labels.namespace }}
             *Details:* {{ $first.Annotations.description }}
             *Incident started at:* {{ $first.StartsAt.Format "2006-01-02 15:04:05" }} UTC
             {{- end -}}
