@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: ticketshop
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
   selector:
@@ -39,7 +39,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       containers:
         - name: ticketshop
-          image: quay-its.epfl.ch/svc0049/ticketshop:2.1.0
+          image: quay-its.epfl.ch/svc0049/ticketshop:2.2.0
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
