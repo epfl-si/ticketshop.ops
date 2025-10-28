@@ -1,9 +1,9 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: ticketShop-alerts
+  name: ticketshop-alerts
   labels:
-    app: ticketShop
+    app: ticketshop
 spec:
   groups:
     - name: ticketShop-pod-alerts
