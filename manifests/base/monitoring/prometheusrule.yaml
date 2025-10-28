@@ -156,7 +156,7 @@ spec:
 
         - alert: "CNPGNoHealthyReplicas"
           expr: >
-            (cnpg_pg_replication_streaming_replicas{namespace="$(namespace)"} - cnpg_pg_replication_is_wal_receiver_up{namespace="$(namespace)"}) < 1
+            sum(cnpg_pg_replication_streaming_replicas{namespace="svc0049t-ticketshop"} - cnpg_pg_replication_is_wal_receiver_up{namespace="svc0049t-ticketshop"}) == 0
           for: 5m
           labels:
             severity: critical
