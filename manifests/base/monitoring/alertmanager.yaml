@@ -7,7 +7,7 @@ spec:
     receiver: "telegram"
     groupWait: 20s
     groupInterval: 5m
-    repeatInterval: 2h
+    repeatInterval: 4h
     matchers:
       - name: sendto
         value: telegram
