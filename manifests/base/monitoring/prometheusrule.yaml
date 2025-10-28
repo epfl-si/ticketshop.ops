@@ -6,9 +6,9 @@ metadata:
     app: ticketshop
 spec:
   groups:
-    - name: ticketShop-pod-alerts
+    - name: ticketshop-pod-alerts
       rules:
-        - alert: "TicketShopPodRestartingTooOften"
+        - alert: "TicketshopPodRestartingTooOften"
           expr: >
             increase(kube_pod_container_status_restarts_total{namespace="$(namespace)", pod=~"ticketsop-.*"}[30m]) > 3
           for: 5m
@@ -17,11 +17,11 @@ spec:
             sendto: telegram
             app: "ticketsop"
           annotations:
-            summary: "TicketShop application pod restarting too often"
+            summary: "Ticketshop application pod restarting too often"
             description: >-
-              The TicketShop application pod has restarted more than 3 times in the last 30 minutes.
+              The Ticketshop application pod has restarted more than 3 times in the last 30 minutes.
 
-        - alert: "TicketShopPodMissing"
+        - alert: "TicketshopPodMissing"
           expr: >
             absent(kube_pod_info{namespace="$(namespace)", pod=~"ticketsop-.*"}) == 1
           for: 15s
@@ -30,11 +30,11 @@ spec:
             sendto: telegram
             app: "ticketsop"
           annotations:
-            summary: "TicketShop application pod is missing"
+            summary: "Ticketshop application pod is missing"
             description: >-
-              No TicketShop application pod is running for more than 15 seconds.
+              No Ticketshop application pod is running for more than 15 seconds.
 
-        - alert: "TicketShopPodNotReady"
+        - alert: "TicketshopPodNotReady"
           expr: >
             sum by (pod) (kube_pod_status_phase{namespace="$(namespace)", pod=~"ticketsop-.*", phase=~"Running|Pending"}) > 0
             and
@@ -45,11 +45,11 @@ spec:
             sendto: telegram
             app: "ticketsop"
           annotations:
-            summary: "TicketShop application pod is not ready"
+            summary: "Ticketshop application pod is not ready"
             description: >-
-              The TicketShop application pod is running but not ready for more than 45 seconds.
+              The Ticketshop application pod is running but not ready for more than 45 seconds.
 
-        - alert: "TicketShopHighMemoryUsage"
+        - alert: "TicketshopHighMemoryUsage"
           expr: >
             (container_memory_usage_bytes{namespace="$(namespace)", pod=~"ticketsop-.*"} / container_spec_memory_limit_bytes{namespace="$(namespace)", pod=~"ticketsop-.*"}) * 100 > 85
           for: 5m
@@ -58,11 +58,11 @@ spec:
             sendto: telegram
             app: "ticketsop"
           annotations:
-            summary: "TicketShop application pod high memory usage"
+            summary: "Ticketshop application pod high memory usage"
             description: >-
-              The TicketShop application pod {{ $labels.pod }} is using more than 85% of its memory limit for more than 5 minutes.
+              The Ticketshop application pod {{ $labels.pod }} is using more than 85% of its memory limit for more than 5 minutes.
 
-        - alert: "TicketShopHighCPUUsage"
+        - alert: "TicketshopHighCPUUsage"
           expr: >
             (rate(container_cpu_usage_seconds_total{namespace="$(namespace)", pod=~"ticketsop-.*"}[5m]) / container_spec_cpu_quota{namespace="$(namespace)", pod=~"ticketsop-.*"} * container_spec_cpu_period{namespace="$(namespace)", pod=~"ticketsop-.*"}) * 100 > 80
           for: 5m
@@ -71,11 +71,11 @@ spec:
             sendto: telegram
             app: "ticketsop"
           annotations:
-            summary: "TicketShop application pod high CPU usage"
+            summary: "Ticketshop application pod high CPU usage"
             description: >-
-              The TicketShop application pod {{ $labels.pod }} is using more than 80% of its CPU limit for more than 5 minutes.
+              The Ticketshop application pod {{ $labels.pod }} is using more than 80% of its CPU limit for more than 5 minutes.
 
-        - alert: "TicketShopPodCrashLooping"
+        - alert: "TicketshopPodCrashLooping"
           expr: >
             rate(kube_pod_container_status_restarts_total{namespace="$(namespace)", pod=~"ticketsop-.*"}[15m]) > 0
           for: 5m
@@ -84,12 +84,11 @@ spec:
             sendto: telegram
             app: "ticketsop"
           annotations:
-            summary: "TicketShop application pod is crash looping"
+            summary: "Ticketshop application pod is crash looping"
             description: >-
-              The TicketShop application pod {{ $labels.pod }} is in a crash loop, restarting continuously.
+              The Ticketshop application pod {{ $labels.pod }} is in a crash loop, restarting continuously.
 
-        # Alertes supplémentaires
-        - alert: "TicketShopPodOOMKilled"
+        - alert: "TicketshopPodOOMKilled"
           expr: >
             (kube_pod_container_status_last_terminated_reason{namespace="$(namespace)", pod=~"ticketsop-.*", reason="OOMKilled"} == 1)
           for: 1m
@@ -98,11 +97,11 @@ spec:
             sendto: telegram
             app: "ticketsop"
           annotations:
-            summary: "TicketShop application pod killed due to OOM"
+            summary: "Ticketshop application pod killed due to OOM"
             description: >-
-              The TicketShop application pod {{ $labels.pod }} was killed due to Out Of Memory.
+              The Ticketshop application pod {{ $labels.pod }} was killed due to Out Of Memory.
 
-        - alert: "TicketShopPodImagePullError"
+        - alert: "TicketshopPodImagePullError"
           expr: >
             kube_pod_container_status_waiting_reason{namespace="$(namespace)", pod=~"ticketsop-.*", reason=~"ImagePullBackOff|ErrImagePull"} == 1
           for: 5m
@@ -111,11 +110,11 @@ spec:
             sendto: telegram
             app: "ticketsop"
           annotations:
-            summary: "TicketShop application pod image pull error"
+            summary: "Ticketshop application pod image pull error"
             description: >-
-              The TicketShop application pod {{ $labels.pod }} cannot pull its container image.
+              The Ticketshop application pod {{ $labels.pod }} cannot pull its container image.
 
-        - alert: "TicketShopPodPending"
+        - alert: "TicketshopPodPending"
           expr: >
             kube_pod_status_phase{namespace="$(namespace)", pod=~"ticketsop-.*", phase="Pending"} == 1
           for: 10m
@@ -124,6 +123,6 @@ spec:
             sendto: telegram
             app: "ticketsop"
           annotations:
-            summary: "TicketShop application pod stuck in pending state"
+            summary: "Ticketshop application pod stuck in pending state"
             description: >-
-              The TicketShop application pod {{ $labels.pod }} has been in pending state for more than 10 minutes.
+              The Ticketshop application pod {{ $labels.pod }} has been in pending state for more than 10 minutes.
