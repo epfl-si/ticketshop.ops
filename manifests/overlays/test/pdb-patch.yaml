@@ -1,6 +1,0 @@
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: ticketshop-pdb
-spec:
-  maxUnavailable: 1
