@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1beta1
+kind: AlertmanagerConfig
+metadata:
+  name: alertmanager-telegram
+spec:
+  receivers:
+    - name: "telegram"
+      telegramConfigs:
+        - botToken:
+            name: telegram-bot-token
+            key: BOT_TOKEN
+          chatID: "-4675218287"
+          parseMode: "Markdown"
+          sendResolved: true
