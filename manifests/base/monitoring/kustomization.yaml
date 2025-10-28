@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - servicemonitor.yaml
   - prometheusrule.yaml
+  - alertmanager.yaml
