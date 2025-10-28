@@ -3,7 +3,6 @@ kind: PodDisruptionBudget
 metadata:
   name: ticketshop-pdb
 spec:
-  minAvailable: 1
   selector:
     matchLabels:
       app: ticketshop
