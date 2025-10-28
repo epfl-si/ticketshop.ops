@@ -35,3 +35,10 @@ patches:
       - op: replace
         path: /spec/receivers/0/telegramConfigs/0/chatID
         value: -4878626685
+  - target:
+      kind: Probe
+      name: ticketshop-url-probe
+    patch: |-
+      - op: replace
+        path: /spec/targets/staticConfig/static/0
+        value: https://ticketshop.epfl.ch
