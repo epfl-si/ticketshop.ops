@@ -322,3 +322,57 @@ spec:
             summary: "CloudNativePG blocked queries detected"
             description: >-
               PostgreSQL instance {{ $labels.pod }} has {{ $value }} blocked queries.
+
+    - name: ticketshop-url-monitoring
+      rules:
+        - alert: "TicketshopURLDown"
+          expr: >
+            probe_success{job="ticketshop-blackbox"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            sendto: telegram
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop URL is down"
+            description: >-
+              The Ticketshop URL {{ $labels.instance }} is not responding to HTTP requests.
+
+        - alert: "TicketshopURLSlowResponse"
+          expr: >
+            probe_duration_seconds{job="ticketshop-blackbox"} > 5
+          for: 2m
+          labels:
+            severity: warning
+            sendto: telegram
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop URL slow response"
+            description: >-
+              The Ticketshop URL {{ $labels.instance }} is responding slowly ({{ $value }}s).
+
+        - alert: "TicketshopURLCertificateExpiry"
+          expr: >
+            probe_ssl_earliest_cert_expiry{job="ticketshop-blackbox"} - time() < 86400 * 7
+          for: 1m
+          labels:
+            severity: warning
+            sendto: telegram
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop SSL certificate expiring soon"
+            description: >-
+              SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}.
+
+        - alert: "TicketshopURLUnexpectedStatusCode"
+          expr: >
+            probe_http_status_code{job="ticketshop-blackbox"} != 200
+          for: 1m
+          labels:
+            severity: warning
+            sendto: telegram
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop URL unexpected status code"
+            description: >-
+              The Ticketshop URL {{ $labels.instance }} returned status code {{ $value }}.
