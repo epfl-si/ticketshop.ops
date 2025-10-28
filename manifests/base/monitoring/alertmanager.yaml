@@ -8,7 +8,6 @@ spec:
     groupWait: 20s
     groupInterval: 5m
     repeatInterval: 2h
-    group_by: ["..."]
     matchers:
       - name: sendto
         value: telegram
