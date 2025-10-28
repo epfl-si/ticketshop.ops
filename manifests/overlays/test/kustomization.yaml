@@ -6,5 +6,7 @@ namespace: svc0049t-ticketshop
 resources:
   - ../../base
 
-patchesStrategicMerge:
-  - route-patch.yaml
+patches:
+  - path: route-patch.yaml
+  - path: replica-patch.yaml
+  - path: pdb-patch.yaml
