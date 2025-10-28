@@ -193,7 +193,7 @@ spec:
             description: >-
               Volume {{ $labels.persistentvolumeclaim }} disk usage is {{ $value | humanizePercentage }}.
 
-        - alert: "CNPGBackupTooOld"
+        - alert: "CNPGBackupMissing"
           expr: >
             (time() - cnpg_collector_last_available_backup_timestamp{namespace="$(namespace)"}) > 90000
           for: 5m
@@ -202,7 +202,7 @@ spec:
             sendto: telegram
             app: "database"
           annotations:
-            summary: "CloudNativePG backup is too old"
+            summary: "Last CloudNativePG backup is older than 25 hours"
             description: >-
               Last backup for cluster {{ $labels.cluster }} is older than 25 hours.
 
