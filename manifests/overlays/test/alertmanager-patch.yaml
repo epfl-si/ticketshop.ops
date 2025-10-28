@@ -9,6 +9,6 @@ spec:
         - botToken:
             name: telegram-bot-token
             key: BOT_TOKEN
-          chatID: "-4675218287"
+          chatID: -4675218287
           parseMode: "Markdown"
           sendResolved: true
