@@ -1,0 +1,29 @@
+- name: Deploy application
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        name: ticketshop
+        namespace: "{{ openshift_namespace }}"
+      spec:
+        project: "{{ service_name }}"
+        source:
+          repoURL: https://github.com/epfl-si/ticketshop.ops.git
+          targetRevision: feature/next
+          path: "manifests/overlays/{{ inventory_environment }}"
+        destination:
+          server: https://kubernetes.default.svc
+          namespace: "{{ openshift_namespace }}"
+        syncPolicy:
+          automated:
+            prune: false
+            selfHeal: false
+            allowEmpty: false
+          retry:
+            limit: 5
+            backoff:
+              duration: 5s
+              factor: 2
+              maxDuration: 3m
