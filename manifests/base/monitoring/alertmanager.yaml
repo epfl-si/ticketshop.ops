@@ -18,6 +18,7 @@ spec:
         - botToken:
             name: telegram-bot-token
             key: BOT_TOKEN
+          chatID: 0
           parseMode: "Markdown"
           message: |
             {% raw %}
