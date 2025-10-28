@@ -1,0 +1,2 @@
+secrets: "{{ lookup('pipe', 'keybase fs read /keybase/team/epfl_ticketshop/secrets.yml') | from_yaml }}"
+service_name: svc0049
