@@ -7,7 +7,31 @@ resources:
   - ../../base
 
 patches:
-  - path: route-patch.yaml
-  - path: replica-patch.yaml
-  - path: pdb-patch.yaml
-  - path: alertmanager-patch.yaml
+  - target:
+      kind: Route
+      name: ticketshop
+    patch: |-
+      - op: replace
+        path: /spec/host
+        value: ticketshop-test.epfl.ch
+  - target:
+      kind: Deployment
+      name: ticketshop
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+  - target:
+      kind: PodDisruptionBudget
+      name: ticketshop-pdb
+    patch: |-
+      - op: replace
+        path: /spec/maxUnavailable
+        value: 1
+  - target:
+      kind: AlertmanagerConfig
+      name: alertmanager-telegram
+    patch: |-
+      - op: replace
+        path: /spec/receivers/0/telegramConfigs/0/chatID
+        value: -4675218287
