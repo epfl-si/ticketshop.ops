@@ -10,12 +10,12 @@ spec:
       rules:
         - alert: "TicketshopPodRestartingTooOften"
           expr: >
-            increase(kube_pod_container_status_restarts_total{namespace="$(namespace)", pod=~"ticketsop-.*"}[30m]) > 3
+            increase(kube_pod_container_status_restarts_total{namespace="$(namespace)", pod=~"ticketshop-.*"}[30m]) > 3
           for: 5m
           labels:
             severity: critical
             sendto: telegram
-            app: "ticketsop"
+            app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod restarting too often"
             description: >-
@@ -23,12 +23,12 @@ spec:
 
         - alert: "TicketshopPodMissing"
           expr: >
-            absent(kube_pod_info{namespace="$(namespace)", pod=~"ticketsop-.*"}) == 1
+            absent(kube_pod_info{namespace="$(namespace)", pod=~"ticketshop-.*"}) == 1
           for: 15s
           labels:
             severity: critical
             sendto: telegram
-            app: "ticketsop"
+            app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod is missing"
             description: >-
@@ -36,14 +36,14 @@ spec:
 
         - alert: "TicketshopPodNotReady"
           expr: >
-            sum by (pod) (kube_pod_status_phase{namespace="$(namespace)", pod=~"ticketsop-.*", phase=~"Running|Pending"}) > 0
+            sum by (pod) (kube_pod_status_phase{namespace="$(namespace)", pod=~"ticketshop-.*", phase=~"Running|Pending"}) > 0
             and
-            sum by (pod) (kube_pod_status_ready{namespace="$(namespace)", pod=~"ticketsop-.*", condition="true"}) == 0
+            sum by (pod) (kube_pod_status_ready{namespace="$(namespace)", pod=~"ticketshop-.*", condition="true"}) == 0
           for: 45s
           labels:
             severity: critical
             sendto: telegram
-            app: "ticketsop"
+            app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod is not ready"
             description: >-
@@ -51,12 +51,12 @@ spec:
 
         - alert: "TicketshopHighMemoryUsage"
           expr: >
-            (container_memory_usage_bytes{namespace="$(namespace)", pod=~"ticketsop-.*"} / container_spec_memory_limit_bytes{namespace="$(namespace)", pod=~"ticketsop-.*"}) * 100 > 85
+            (container_memory_usage_bytes{namespace="$(namespace)", pod=~"ticketshop-.*"} / container_spec_memory_limit_bytes{namespace="$(namespace)", pod=~"ticketshop-.*"}) * 100 > 85
           for: 5m
           labels:
             severity: warning
             sendto: telegram
-            app: "ticketsop"
+            app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod high memory usage"
             description: >-
@@ -64,12 +64,12 @@ spec:
 
         - alert: "TicketshopHighCPUUsage"
           expr: >
-            (rate(container_cpu_usage_seconds_total{namespace="$(namespace)", pod=~"ticketsop-.*"}[5m]) / container_spec_cpu_quota{namespace="$(namespace)", pod=~"ticketsop-.*"} * container_spec_cpu_period{namespace="$(namespace)", pod=~"ticketsop-.*"}) * 100 > 80
+            (rate(container_cpu_usage_seconds_total{namespace="$(namespace)", pod=~"ticketshop-.*"}[5m]) / container_spec_cpu_quota{namespace="$(namespace)", pod=~"ticketshop-.*"} * container_spec_cpu_period{namespace="$(namespace)", pod=~"ticketshop-.*"}) * 100 > 80
           for: 5m
           labels:
             severity: warning
             sendto: telegram
-            app: "ticketsop"
+            app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod high CPU usage"
             description: >-
@@ -77,12 +77,12 @@ spec:
 
         - alert: "TicketshopPodCrashLooping"
           expr: >
-            rate(kube_pod_container_status_restarts_total{namespace="$(namespace)", pod=~"ticketsop-.*"}[15m]) > 0
+            rate(kube_pod_container_status_restarts_total{namespace="$(namespace)", pod=~"ticketshop-.*"}[15m]) > 0
           for: 5m
           labels:
             severity: critical
             sendto: telegram
-            app: "ticketsop"
+            app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod is crash looping"
             description: >-
@@ -90,12 +90,12 @@ spec:
 
         - alert: "TicketshopPodOOMKilled"
           expr: >
-            (kube_pod_container_status_last_terminated_reason{namespace="$(namespace)", pod=~"ticketsop-.*", reason="OOMKilled"} == 1)
+            (kube_pod_container_status_last_terminated_reason{namespace="$(namespace)", pod=~"ticketshop-.*", reason="OOMKilled"} == 1)
           for: 1m
           labels:
             severity: critical
             sendto: telegram
-            app: "ticketsop"
+            app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod killed due to OOM"
             description: >-
@@ -103,12 +103,12 @@ spec:
 
         - alert: "TicketshopPodImagePullError"
           expr: >
-            kube_pod_container_status_waiting_reason{namespace="$(namespace)", pod=~"ticketsop-.*", reason=~"ImagePullBackOff|ErrImagePull"} == 1
+            kube_pod_container_status_waiting_reason{namespace="$(namespace)", pod=~"ticketshop-.*", reason=~"ImagePullBackOff|ErrImagePull"} == 1
           for: 5m
           labels:
             severity: warning
             sendto: telegram
-            app: "ticketsop"
+            app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod image pull error"
             description: >-
@@ -116,12 +116,12 @@ spec:
 
         - alert: "TicketshopPodPending"
           expr: >
-            kube_pod_status_phase{namespace="$(namespace)", pod=~"ticketsop-.*", phase="Pending"} == 1
+            kube_pod_status_phase{namespace="$(namespace)", pod=~"ticketshop-.*", phase="Pending"} == 1
           for: 10m
           labels:
             severity: warning
             sendto: telegram
-            app: "ticketsop"
+            app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod stuck in pending state"
             description: >-
