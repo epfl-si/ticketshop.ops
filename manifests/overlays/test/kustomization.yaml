@@ -13,7 +13,7 @@ patches:
     patch: |-
       - op: replace
         path: /spec/host
-        value: ticketshop-test.epfl.ch
+        value: test-ticketshop.epfl.ch
   - target:
       kind: Deployment
       name: ticketshop
@@ -35,3 +35,10 @@ patches:
       - op: replace
         path: /spec/receivers/0/telegramConfigs/0/chatID
         value: -4675218287
+  - target:
+      kind: Probe
+      name: ticketshop-url-probe
+    patch: |-
+      - op: replace
+        path: /spec/targets/staticConfig/static/0
+        value: https://test-ticketshop.epfl.ch
