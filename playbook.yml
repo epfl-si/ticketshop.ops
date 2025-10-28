@@ -1,5 +1,13 @@
-- name: Build TicketShop on OpenShift
+- name: Ensure secrets
   hosts: all
-  gather_facts: no
   roles:
-    - role: roles/ticketshop-openshift
+    - role: roles/secrets
+  tags:
+    - secrets
+
+- name: Deploy Ticketshop application
+  hosts: all
+  roles:
+    - role: roles/app
+  tags:
+    - app
