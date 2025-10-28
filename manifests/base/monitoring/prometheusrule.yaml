@@ -10,7 +10,7 @@ spec:
       rules:
         - alert: "TicketShopPodRestartingTooOften"
           expr: >
-            increase(kube_pod_container_status_restarts_total{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}[30m]) > 3
+            increase(kube_pod_container_status_restarts_total{namespace="$(namespace)", pod=~"ticketsop-.*"}[30m]) > 3
           for: 5m
           labels:
             severity: critical
@@ -23,7 +23,7 @@ spec:
 
         - alert: "TicketShopPodMissing"
           expr: >
-            absent(kube_pod_info{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}) == 1
+            absent(kube_pod_info{namespace="$(namespace)", pod=~"ticketsop-.*"}) == 1
           for: 15s
           labels:
             severity: critical
@@ -36,9 +36,9 @@ spec:
 
         - alert: "TicketShopPodNotReady"
           expr: >
-            sum by (pod) (kube_pod_status_phase{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*", phase=~"Running|Pending"}) > 0
+            sum by (pod) (kube_pod_status_phase{namespace="$(namespace)", pod=~"ticketsop-.*", phase=~"Running|Pending"}) > 0
             and
-            sum by (pod) (kube_pod_status_ready{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*", condition="true"}) == 0
+            sum by (pod) (kube_pod_status_ready{namespace="$(namespace)", pod=~"ticketsop-.*", condition="true"}) == 0
           for: 45s
           labels:
             severity: critical
@@ -51,7 +51,7 @@ spec:
 
         - alert: "TicketShopHighMemoryUsage"
           expr: >
-            (container_memory_usage_bytes{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"} / container_spec_memory_limit_bytes{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}) * 100 > 85
+            (container_memory_usage_bytes{namespace="$(namespace)", pod=~"ticketsop-.*"} / container_spec_memory_limit_bytes{namespace="$(namespace)", pod=~"ticketsop-.*"}) * 100 > 85
           for: 5m
           labels:
             severity: warning
@@ -64,7 +64,7 @@ spec:
 
         - alert: "TicketShopHighCPUUsage"
           expr: >
-            (rate(container_cpu_usage_seconds_total{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}[5m]) / container_spec_cpu_quota{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"} * container_spec_cpu_period{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}) * 100 > 80
+            (rate(container_cpu_usage_seconds_total{namespace="$(namespace)", pod=~"ticketsop-.*"}[5m]) / container_spec_cpu_quota{namespace="$(namespace)", pod=~"ticketsop-.*"} * container_spec_cpu_period{namespace="$(namespace)", pod=~"ticketsop-.*"}) * 100 > 80
           for: 5m
           labels:
             severity: warning
@@ -77,7 +77,7 @@ spec:
 
         - alert: "TicketShopPodCrashLooping"
           expr: >
-            rate(kube_pod_container_status_restarts_total{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*"}[15m]) > 0
+            rate(kube_pod_container_status_restarts_total{namespace="$(namespace)", pod=~"ticketsop-.*"}[15m]) > 0
           for: 5m
           labels:
             severity: critical
@@ -91,7 +91,7 @@ spec:
         # Alertes supplémentaires
         - alert: "TicketShopPodOOMKilled"
           expr: >
-            (kube_pod_container_status_last_terminated_reason{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*", reason="OOMKilled"} == 1)
+            (kube_pod_container_status_last_terminated_reason{namespace="$(namespace)", pod=~"ticketsop-.*", reason="OOMKilled"} == 1)
           for: 1m
           labels:
             severity: critical
@@ -104,7 +104,7 @@ spec:
 
         - alert: "TicketShopPodImagePullError"
           expr: >
-            kube_pod_container_status_waiting_reason{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*", reason=~"ImagePullBackOff|ErrImagePull"} == 1
+            kube_pod_container_status_waiting_reason{namespace="$(namespace)", pod=~"ticketsop-.*", reason=~"ImagePullBackOff|ErrImagePull"} == 1
           for: 5m
           labels:
             severity: warning
@@ -117,7 +117,7 @@ spec:
 
         - alert: "TicketShopPodPending"
           expr: >
-            kube_pod_status_phase{namespace="{{ openshift_namespace }}", pod=~"ticketsop-.*", phase="Pending"} == 1
+            kube_pod_status_phase{namespace="$(namespace)", pod=~"ticketsop-.*", phase="Pending"} == 1
           for: 10m
           labels:
             severity: warning
