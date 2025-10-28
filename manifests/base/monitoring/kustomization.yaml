@@ -5,3 +5,7 @@ resources:
   - servicemonitor.yaml
   - prometheusrule.yaml
   - alertmanager.yaml
+  - blackbox-exporter.yaml
+  - blackbox-service.yaml
+  - blackbox-config.yaml
+  - probe.yaml
