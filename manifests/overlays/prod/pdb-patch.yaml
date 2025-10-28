@@ -4,4 +4,3 @@ metadata:
   name: ticketshop-pdb
 spec:
   minAvailable: 1
-  maxUnavailable: 1

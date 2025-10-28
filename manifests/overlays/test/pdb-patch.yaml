@@ -3,5 +3,4 @@ kind: PodDisruptionBudget
 metadata:
   name: ticketshop-pdb
 spec:
-  minAvailable: 0
   maxUnavailable: 1
