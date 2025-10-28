@@ -1,0 +1,54 @@
+apiVersion: monitoring.coreos.com/v1beta1
+kind: AlertmanagerConfig
+metadata:
+  name: alertmanager-telegram
+spec:
+  route:
+    receiver: "telegram"
+    groupBy: []
+    groupWait: 20s
+    groupInterval: 5m
+    repeatInterval: 2h
+    matchers:
+      - name: sendto
+        value: telegram
+        matchType: "="
+  receivers:
+    - name: "telegram"
+      telegramConfigs:
+        - botToken:
+            name: telegram-bot-token
+            key: BOT_TOKEN
+          parseMode: "Markdown"
+          message: |
+            {% raw %}
+            {{- if .Alerts -}}
+            {{- $first := index .Alerts 0 -}}
+            {{- if eq $first.Status "firing" -}}
+              {{- if eq $first.Labels.severity "critical" -}}
+            🚨 *ALERT CRITICAL* 🚨
+              {{- else if eq $first.Labels.severity "warning" -}}
+            ⚠️ *ALERT WARNING* ⚠️
+              {{- else if eq $first.Labels.severity "info" -}}
+            ℹ️ *ALERT INFO* ℹ️
+              {{- end }}
+            {{- else if eq $first.Status "resolved" -}}
+              {{- if eq $first.Labels.severity "critical" -}}
+            ✅ *RESOLVED CRITICAL* ✅
+              {{- else if eq $first.Labels.severity "warning" -}}
+            ✅ *RESOLVED WARNING* ✅
+              {{- else if eq $first.Labels.severity "info" -}}
+            ✅ *RESOLVED INFO* ✅
+              {{- end }}
+            {{- end }}
+            *Issue detected:* {{ $first.Annotations.summary }}
+            *Application:* {{ $first.Labels.app }}
+            {{- if $first.Labels.pod }}
+            *Pod:* {{ $first.Labels.pod }}
+            {{- end }}
+            *Namespace:* {{ $first.Labels.namespace }}
+            *Details:* {{ $first.Annotations.description }}
+            *Incident started at:* {{ $first.StartsAt.Format "2006-01-02 15:04:05" }} UTC
+            {{- end -}}
+            {% endraw %}
+          sendResolved: true
