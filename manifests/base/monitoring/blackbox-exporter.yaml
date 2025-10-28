@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blackbox-exporter
+  template:
+    metadata:
+      labels:
+        app: blackbox-exporter
+    spec:
+      imagePullSecrets:
+        - name: svc0049-pull-secret
+      containers:
+        - name: blackbox-exporter
+          image: quay-its.epfl.ch/svc0049/blackbox-exporter:v0.27.0
+          ports:
+            - containerPort: 9115
+              name: http
+          args:
+            - "--config.file=/etc/blackbox_exporter/config.yml"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/blackbox_exporter
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "32Mi"
+            limits:
+              memory: "64Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9115
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9115
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: blackbox-exporter-config
