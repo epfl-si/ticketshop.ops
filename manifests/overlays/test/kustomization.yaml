@@ -11,4 +11,3 @@ patches:
   - path: replica-patch.yaml
   - path: pdb-patch.yaml
   - path: alertmanager-patch.yaml
-  - path: prometheusrule-patch.yaml
