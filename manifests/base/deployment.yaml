@@ -6,8 +6,6 @@ spec:
   replicas: 2
   strategy:
     type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
   selector:
     matchLabels:
       app: ticketshop
@@ -17,6 +15,28 @@ spec:
         app: ticketshop
     spec:
       serviceAccountName: ticketshop
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: ticketshop
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: ticketshop
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: ticketshop
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: ticketshop
           image: quay-its.epfl.ch/svc0049/ticketshop:2.1.0
