@@ -36,9 +36,9 @@ patches:
         path: /spec/receivers/0/telegramConfigs/0/chatID
         value: -4878626685
   - target:
-      kind: Probe
-      name: ticketshop-url-probe
+      kind: ServiceMonitor
+      name: ticketshop-probe
     patch: |-
       - op: replace
-        path: /spec/targets/staticConfig/static/0
+        path: /spec/endpoints/0/params/target/0
         value: https://ticketshop.epfl.ch
