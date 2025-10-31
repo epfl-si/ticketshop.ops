@@ -1,19 +1,23 @@
 apiVersion: monitoring.coreos.com/v1
-kind: Probe
+kind: ServiceMonitor
 metadata:
-  name: ticketshop-url-probe
-  labels:
-    app: ticketshop
+  name: ticketshop-probe
 spec:
-  jobName: ticketshop-blackbox
-  module: http_2xx
-  prober:
-    url: blackbox-exporter:9115
-    scheme: http
-    path: /probe
-  targets:
-    staticConfig:
-      static:
-        - https://ticketshop.epfl.ch
-  interval: 30s
-  scrapeTimeout: 10s
+  endpoints:
+    - interval: 5m
+      params:
+        module:
+          - http_2xx
+        target:
+          - "https://ticketshop.epfl.ch"
+      path: /probe
+      port: http
+      relabelings:
+        - action: replace
+          replacement: "blackbox-exporter:9115"
+          targetLabel: __address__
+        - action: replace
+          sourceLabels:
+            - __param_target
+          targetLabel: target_url
+      scheme: http
