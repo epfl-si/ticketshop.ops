@@ -3,6 +3,9 @@ kind: ServiceMonitor
 metadata:
   name: ticketshop-probe
 spec:
+  selector:
+    matchLabels:
+      app: blackbox-exporter
   endpoints:
     - interval: 5m
       params:
