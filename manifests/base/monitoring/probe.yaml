@@ -17,9 +17,13 @@ spec:
       port: http
       scheme: http
       relabelings:
-        - targetLabel: __address__
+        - action: replace
+          targetLabel: __address__
           replacement: blackbox-service.svc0049p-ticketshop.svc.cluster.local:9115
-        - sourceLabels: [__address__]
-          targetLabel: __param_target
-        - sourceLabels: [__param_target]
-          targetLabel: instance
+        - action: replace
+          sourceLabels:
+            - __param_target
+          targetLabel: target_url
+        - action: replace
+          replacement: services
+          targetLabel: ticketshop
