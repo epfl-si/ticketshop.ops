@@ -15,12 +15,4 @@ spec:
           - "https://ticketshop.epfl.ch"
       path: /probe
       port: http
-      relabelings:
-        - action: replace
-          replacement: "blackbox-exporter:9115"
-          targetLabel: __address__
-        - action: replace
-          sourceLabels:
-            - __param_target
-          targetLabel: target_url
       scheme: http
