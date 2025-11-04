@@ -5,3 +5,4 @@ resources:
   - app
   - database
   - monitoring
+  - logs
