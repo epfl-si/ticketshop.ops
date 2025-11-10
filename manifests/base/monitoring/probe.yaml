@@ -7,7 +7,7 @@ spec:
     matchLabels:
       app: blackbox-exporter
   endpoints:
-    - interval: 3s
+    - interval: 30s
       params:
         module:
           - http_2xx
@@ -16,3 +16,8 @@ spec:
       path: /probe
       port: http
       scheme: http
+      relabelings:
+        - action: replace
+          sourceLabels:
+            - __param_target
+          targetLabel: target_url
