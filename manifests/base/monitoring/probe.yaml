@@ -21,3 +21,6 @@ spec:
           sourceLabels:
             - __param_target
           targetLabel: target_url
+        - action: replace
+          replacement: services
+          targetLabel: ticketshop
