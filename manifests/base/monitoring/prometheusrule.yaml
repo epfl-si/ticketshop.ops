@@ -217,7 +217,7 @@ spec:
           annotations:
             summary: "CloudNativePG WAL archiving delayed"
             description: >-
-              WAL archiving delayed by {{ $value }} seconds on {{ $labels.pod }}.
+              WAL archiving delayed by {{ $value }} seconds on {{ $labels.pod }}
 
         - alert: "CNPGLongRunningTransaction"
           expr: >
