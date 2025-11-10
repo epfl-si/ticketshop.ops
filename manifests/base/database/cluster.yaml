@@ -18,10 +18,10 @@ spec:
       s3Credentials:
         accessKeyId:
           name: s3-credentials
-          key: AWS_ACCESS_KEY_ID
+          key: AWS_ACCESS_KEY
         secretAccessKey:
           name: s3-credentials
-          key: AWS_SECRET_ACCESS_KEY
+          key: AWS_SECRET
   env:
     - name: AWS_REQUEST_CHECKSUM_CALCULATION
       value: WHEN_REQUIRED
