@@ -18,9 +18,6 @@ spec:
       scheme: http
       relabelings:
         - action: replace
-          targetLabel: __address__
-          replacement: blackbox-service.svc0049p-ticketshop.svc.cluster.local:9115
-        - action: replace
           sourceLabels:
             - __param_target
           targetLabel: target_url
