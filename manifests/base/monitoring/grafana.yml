@@ -8,4 +8,4 @@ spec:
     matchLabels:
       dashboards: grafana-xxx
   resyncPeriod: 10m0s
-  title: svc0049 - Ticketshop
+  title: svc0049 — Ticketshop
