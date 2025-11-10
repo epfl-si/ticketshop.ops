@@ -16,11 +16,3 @@ spec:
       path: /probe
       port: http
       scheme: http
-      relabelings:
-        - action: replace
-          sourceLabels:
-            - __param_target
-          targetLabel: target_url
-        - action: replace
-          replacement: services
-          targetLabel: ticketshop
