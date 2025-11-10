@@ -312,19 +312,6 @@ spec:
 
     - name: ticketshop-url-monitoring
       rules:
-        - alert: "TicketshopURLDown"
-          expr: >
-            probe_success{service="ticketshop"} == 0
-          for: 1m
-          labels:
-            severity: critical
-            sendto: telegram
-            app: "ticketshop"
-          annotations:
-            summary: "Ticketshop URL is down"
-            description: >-
-              The Ticketshop URL {{ $labels.target_url }} is not responding to HTTP requests.
-
         - alert: "TicketshopURLSlowResponse"
           expr: >
             probe_duration_seconds{service="ticketshop"} > 5
@@ -356,10 +343,10 @@ spec:
             probe_http_status_code{service="ticketshop"} != 200
           for: 1m
           labels:
-            severity: warning
+            severity: critical
             sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop URL unexpected status code"
             description: >-
-              The Ticketshop URL {{ $labels.target_url }} returned status code {{ $value }}.
+              The Ticketshop URL {{ $labels.target_url }} returned invalide status code {{ $value }}.
