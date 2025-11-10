@@ -8,7 +8,7 @@ spec:
     kind: Deployment
     name: ticketshop
   updatePolicy:
-    updateMode: "Auto"
+    updateMode: "Off"
   resourcePolicy:
     containerPolicies:
       - containerName: "*"
