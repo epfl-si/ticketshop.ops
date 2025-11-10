@@ -8,13 +8,13 @@ spec:
     kind: Deployment
     name: ticketshop
   updatePolicy:
-    updateMode: "Off"
+    updateMode: "Auto"
   resourcePolicy:
     containerPolicies:
       - containerName: "*"
         maxAllowed:
           memory: 2Gi
         minAllowed:
-          cpu: 10m
-          memory: 128Mi
+          cpu: 50m
+          memory: 400Mi
         controlledResources: ["cpu", "memory"]
