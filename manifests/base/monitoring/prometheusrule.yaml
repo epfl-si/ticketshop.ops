@@ -327,7 +327,7 @@ spec:
       rules:
         - alert: "TicketshopURLDown"
           expr: >
-            probe_success{job="ticketshop-blackbox"} == 0
+            probe_success{service="ticketshop"} == 0
           for: 1m
           labels:
             severity: critical
@@ -340,7 +340,7 @@ spec:
 
         - alert: "TicketshopURLSlowResponse"
           expr: >
-            probe_duration_seconds{job="ticketshop-blackbox"} > 5
+            probe_duration_seconds{service="ticketshop"} > 5
           for: 2m
           labels:
             severity: warning
@@ -353,7 +353,7 @@ spec:
 
         - alert: "TicketshopURLCertificateExpiry"
           expr: >
-            probe_ssl_earliest_cert_expiry{job="ticketshop-blackbox"} - time() < 86400 * 7
+            probe_ssl_earliest_cert_expiry{service="ticketshop"} - time() < 86400 * 7
           for: 1m
           labels:
             severity: warning
@@ -366,7 +366,7 @@ spec:
 
         - alert: "TicketshopURLUnexpectedStatusCode"
           expr: >
-            probe_http_status_code{job="ticketshop-blackbox"} != 200
+            probe_http_status_code{service="ticketshop"} != 200
           for: 1m
           labels:
             severity: warning
