@@ -7,7 +7,7 @@ spec:
     matchLabels:
       app: blackbox-exporter
   endpoints:
-    - interval: 30s
+    - interval: 3s
       params:
         module:
           - http_2xx
