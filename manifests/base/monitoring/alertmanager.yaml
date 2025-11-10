@@ -5,9 +5,9 @@ metadata:
 spec:
   route:
     receiver: "telegram"
-    groupWait: 20s
-    groupInterval: 5m
-    repeatInterval: 12h
+    groupWait: 10s
+    groupInterval: 30s
+    repeatInterval: 24h
     matchers:
       - name: sendto
         value: telegram
