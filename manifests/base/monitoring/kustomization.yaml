@@ -9,3 +9,4 @@ resources:
   - blackbox-service.yaml
   - blackbox-config.yaml
   - probe.yaml
+  - grafana.yml
