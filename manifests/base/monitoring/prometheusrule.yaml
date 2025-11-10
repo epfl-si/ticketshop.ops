@@ -195,16 +195,16 @@ spec:
 
         - alert: "CNPGBackupMissing"
           expr: >
-            (time() - max(cnpg_collector_last_available_backup_timestamp{namespace="$(namespace)"}) by (cluster)) > 90000
+            (time() - max(cnpg_collector_last_available_backup_timestamp{namespace="$(namespace)"}) by (cluster)) > 108000
           for: 5m
           labels:
             severity: critical
             sendto: telegram
             app: "database"
           annotations:
-            summary: "Last CloudNativePG backup is older than 25 hours"
+            summary: "Last CloudNativePG backup is older than 30 hours"
             description: >-
-              Last backup for cluster {{ $labels.cluster }} is older than 25 hours.
+              Last backup for cluster {{ $labels.cluster }} is older than 30 hours.
 
         - alert: "CNPGWALArchivingDelayed"
           expr: >
