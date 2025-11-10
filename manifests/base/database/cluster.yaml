@@ -11,6 +11,17 @@ spec:
     size: 5Gi
     storageClass: sc-gold
   enableSuperuserAccess: true
+  backup:
+    barmanObjectStore:
+      destinationPath: "s3://xxx"
+      endpointURL: "https://s3.epfl.ch"
+      s3Credentials:
+        accessKeyId:
+          name: s3-credentials
+          key: AWS_ACCESS_KEY_ID
+        secretAccessKey:
+          name: s3-credentials
+          key: AWS_SECRET_ACCESS_KEY
   env:
     - name: AWS_REQUEST_CHECKSUM_CALCULATION
       value: WHEN_REQUIRED
