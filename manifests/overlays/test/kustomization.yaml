@@ -36,6 +36,13 @@ patches:
         path: /spec/receivers/0/telegramConfigs/0/chatID
         value: -4675218287
   - target:
+      kind: Cluster
+      name: postgres-cluster
+    patch: |-
+      - op: replace
+        path: /spec/backup/barmanObjectStore/destinationPath
+        value: "s3://svc0049-58ebfa5babe5dae8024a5bad3f33d137"
+  - target:
       kind: ServiceMonitor
       name: ticketshop-probe
     patch: |-
