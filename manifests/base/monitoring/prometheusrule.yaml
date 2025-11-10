@@ -206,19 +206,6 @@ spec:
             description: >-
               Last backup for cluster {{ $labels.cluster }} is older than 30 hours.
 
-        - alert: "CNPGWALArchivingDelayed"
-          expr: >
-            (1 - cnpg_pg_replication_in_recovery{namespace="$(namespace)"}) * cnpg_pg_stat_archiver_seconds_since_last_archival{namespace="$(namespace)"} > 9000
-          for: 5m
-          labels:
-            severity: warning
-            sendto: telegram
-            app: "database"
-          annotations:
-            summary: "CloudNativePG WAL archiving delayed"
-            description: >-
-              WAL archiving delayed by {{ $value }} seconds on {{ $labels.pod }}
-
         - alert: "CNPGLongRunningTransaction"
           expr: >
             cnpg_backends_max_tx_duration_seconds{namespace="$(namespace)"} > 3600
