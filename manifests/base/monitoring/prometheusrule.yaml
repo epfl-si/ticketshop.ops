@@ -195,7 +195,7 @@ spec:
 
         - alert: "CNPGBackupMissing"
           expr: >
-            (time() - cnpg_collector_last_available_backup_timestamp{namespace="$(namespace)"}) > 90000
+            (time() - max(cnpg_collector_last_available_backup_timestamp{namespace="$(namespace)"}) by (cluster)) > 90000
           for: 5m
           labels:
             severity: critical
