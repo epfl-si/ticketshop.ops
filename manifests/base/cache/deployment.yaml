@@ -14,7 +14,6 @@ spec:
       labels:
         app: redis
     spec:
-      serviceAccountName: redis
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
