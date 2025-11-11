@@ -14,6 +14,8 @@ spec:
       labels:
         app: redis
     spec:
+      imagePullSecrets:
+        - name: svc0049-pull-secret
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
