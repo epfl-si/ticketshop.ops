@@ -8,10 +8,6 @@ spec:
     groupWait: 1s
     groupInterval: 3s
     groupBy: ["..."]
-    matchers:
-      - name: sendto
-        value: telegram
-        matchType: "="
   receivers:
     - name: "telegram"
       telegramConfigs:

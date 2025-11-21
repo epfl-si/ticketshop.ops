@@ -14,7 +14,6 @@ spec:
           for: 5m
           labels:
             severity: critical
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod restarting too often"
@@ -27,7 +26,6 @@ spec:
           for: 15s
           labels:
             severity: critical
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod is missing"
@@ -42,7 +40,6 @@ spec:
           for: 45s
           labels:
             severity: critical
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod is not ready"
@@ -55,7 +52,6 @@ spec:
           for: 5m
           labels:
             severity: warning
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod high memory usage"
@@ -68,7 +64,6 @@ spec:
           for: 5m
           labels:
             severity: warning
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod high CPU usage"
@@ -81,7 +76,6 @@ spec:
           for: 5m
           labels:
             severity: critical
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod is crash looping"
@@ -94,7 +88,6 @@ spec:
           for: 1m
           labels:
             severity: critical
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod killed due to OOM"
@@ -107,7 +100,6 @@ spec:
           for: 5m
           labels:
             severity: warning
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod image pull error"
@@ -120,7 +112,6 @@ spec:
           for: 10m
           labels:
             severity: warning
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop application pod stuck in pending state"
@@ -134,7 +125,6 @@ spec:
           for: 2m
           labels:
             severity: critical
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG pod not ready"
@@ -147,7 +137,6 @@ spec:
           for: 5m
           labels:
             severity: warning
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG replication lag detected"
@@ -160,7 +149,6 @@ spec:
           for: 5m
           labels:
             severity: critical
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG has no healthy replicas"
@@ -173,7 +161,6 @@ spec:
           for: 5m
           labels:
             severity: warning
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG high connection usage"
@@ -186,7 +173,6 @@ spec:
           for: 10m
           labels:
             severity: warning
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG high disk usage"
@@ -199,7 +185,6 @@ spec:
           for: 5m
           labels:
             severity: critical
-            sendto: telegram
             app: "database"
           annotations:
             summary: "Last CloudNativePG backup is older than 30 hours"
@@ -212,7 +197,6 @@ spec:
           for: 10m
           labels:
             severity: warning
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG long running transaction"
@@ -225,7 +209,6 @@ spec:
           for: 5m
           labels:
             severity: warning
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG deadlocks detected"
@@ -238,7 +221,6 @@ spec:
           for: 10m
           labels:
             severity: critical
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG high transaction wraparound risk"
@@ -251,7 +233,6 @@ spec:
           for: 2m
           labels:
             severity: critical
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG cluster missing"
@@ -264,7 +245,6 @@ spec:
           for: 10m
           labels:
             severity: warning
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG high CPU usage"
@@ -277,7 +257,6 @@ spec:
           for: 10m
           labels:
             severity: warning
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG high memory usage"
@@ -290,7 +269,6 @@ spec:
           for: 5m
           labels:
             severity: warning
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG metrics collection errors"
@@ -303,7 +281,6 @@ spec:
           for: 10m
           labels:
             severity: warning
-            sendto: telegram
             app: "database"
           annotations:
             summary: "CloudNativePG blocked queries detected"
@@ -318,7 +295,6 @@ spec:
           for: 2m
           labels:
             severity: warning
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop URL slow response"
@@ -331,7 +307,6 @@ spec:
           for: 1m
           labels:
             severity: warning
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop SSL certificate expiring soon"
@@ -344,7 +319,6 @@ spec:
           for: 1m
           labels:
             severity: critical
-            sendto: telegram
             app: "ticketshop"
           annotations:
             summary: "Ticketshop URL unexpected status code"
