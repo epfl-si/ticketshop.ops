@@ -5,9 +5,9 @@ metadata:
 spec:
   route:
     receiver: "telegram"
-    groupWait: 10s
-    groupInterval: 30s
-    repeatInterval: 24h
+    groupWait: 1s
+    groupInterval: 3s
+    groupBy: ["..."]
     matchers:
       - name: sendto
         value: telegram
@@ -21,30 +21,37 @@ spec:
           chatID: 0
           parseMode: "Markdown"
           message: |
-            {{- if .Alerts -}}
-            {{- $first := index .Alerts 0 -}}
-            {{- if eq $first.Status "firing" -}}
-              {{- if eq $first.Labels.severity "critical" -}}
+            {% raw %}{{ range $i, $alert := .Alerts }}
+            {{- if $i }}---
+            {{ end }}
+            {{- if eq $alert.Status "firing" }}
+              {{- if eq $alert.Labels.severity "critical" }}
             🚨 *ALERT CRITICAL* 🚨
-              {{- else if eq $first.Labels.severity "warning" -}}
+              {{- else if eq $alert.Labels.severity "warning" }}
             ⚠️ *ALERT WARNING* ⚠️
-              {{- else if eq $first.Labels.severity "info" -}}
+              {{- else if eq $alert.Labels.severity "info" }}
             ℹ️ *ALERT INFO* ℹ️
               {{- end }}
-            {{- else if eq $first.Status "resolved" -}}
-              {{- if eq $first.Labels.severity "critical" -}}
+            {{- else if eq $alert.Status "resolved" }}
+              {{- if eq $alert.Labels.severity "critical" }}
             ✅ *RESOLVED CRITICAL* ✅
-              {{- else if eq $first.Labels.severity "warning" -}}
+              {{- else if eq $alert.Labels.severity "warning" }}
             ✅ *RESOLVED WARNING* ✅
-              {{- else if eq $first.Labels.severity "info" -}}
+              {{- else if eq $alert.Labels.severity "info" }}
             ✅ *RESOLVED INFO* ✅
               {{- end }}
             {{- end }}
-            *Issue detected:* {{ $first.Annotations.summary }}
-            {{- if $first.Labels.pod }}
-            *Pod:* {{ $first.Labels.pod }}
+            *Issue:* {{ $alert.Annotations.summary }}
+            {{- if $alert.Labels.pod }}
+            *Pod:* {{ $alert.Labels.pod }}
             {{- end }}
-            *Details:* {{ $first.Annotations.description }}
-            *Incident started at:* {{ $first.StartsAt.Format "2006-01-02 15:04:05" }} UTC
-            {{- end -}}
+            {{- if $alert.Labels.namespace }}
+            *Namespace:* {{ $alert.Labels.namespace }}
+            {{- end }}
+            {{- if $alert.Labels.job }}
+            *Job:* {{ $alert.Labels.job }}
+            {{- end }}
+            *Details:* {{ $alert.Annotations.description }}
+            *Started:* {{ $alert.StartsAt.Format "2006-01-02 15:04:05" }} UTC
+            {{ end }}{% endraw %}
           sendResolved: true
