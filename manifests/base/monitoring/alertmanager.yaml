@@ -21,7 +21,7 @@ spec:
           chatID: 0
           parseMode: "Markdown"
           message: |
-            {% raw %}{{ range $i, $alert := .Alerts }}
+            {{ range $i, $alert := .Alerts }}
             {{- if $i }}---
             {{ end }}
             {{- if eq $alert.Status "firing" }}
@@ -53,5 +53,5 @@ spec:
             {{- end }}
             *Details:* {{ $alert.Annotations.description }}
             *Started:* {{ $alert.StartsAt.Format "2006-01-02 15:04:05" }} UTC
-            {{ end }}{% endraw %}
+            {{ end }}
           sendResolved: true
