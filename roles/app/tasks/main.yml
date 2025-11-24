@@ -2,16 +2,7 @@
   ansible.builtin.include_tasks:
     file: pull.yml
     apply:
-      tags: 
+      tags:
         - app.pull
   tags:
     - app.pull
-
-- name: Ensure ArgoCD application
-  ansible.builtin.include_tasks:
-    file: app.yml
-    apply:
-      tags: 
-        - app.app
-  tags:
-    - app.app
