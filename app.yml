@@ -1,0 +1,19 @@
+project: "svc0049"
+source:
+  repoURL: https://github.com/epfl-si/ticketshop.ops.git
+  targetRevision: main
+  path: "manifests/overlays/prod"
+destination:
+  server: https://kubernetes.default.svc
+  namespace: "svc0049t-ticketshop"
+syncPolicy:
+  automated:
+    prune: false
+    selfHeal: false
+    allowEmpty: false
+  retry:
+    limit: 5
+    backoff:
+      duration: 5s
+      factor: 2
+      maxDuration: 3m
