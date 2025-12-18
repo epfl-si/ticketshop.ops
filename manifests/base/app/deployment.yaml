@@ -39,7 +39,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       containers:
         - name: ticketshop
-          image: quay-its.epfl.ch/svc0049/ticketshop:a5d5d81-dev
+          image: quay-its.epfl.ch/svc0049/ticketshop:d4feaa5-dev
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
