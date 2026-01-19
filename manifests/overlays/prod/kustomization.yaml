@@ -36,6 +36,13 @@ patches:
         path: /spec/instanceSelector/matchLabels/dashboards
         value: grafana-prod
   - target:
+      kind: GrafanaDashboard
+      name: svc0049-folder
+    patch: |-
+      - op: replace
+        path: /spec/instanceSelector/matchLabels/dashboards
+        value: grafana-prod
+  - target:
       kind: AlertmanagerConfig
       name: alertmanager-telegram
     patch: |-

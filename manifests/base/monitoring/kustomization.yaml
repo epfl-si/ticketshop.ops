@@ -10,3 +10,5 @@ resources:
   - blackbox-config.yaml
   - probe.yaml
   - grafana.yml
+  - grafana-dashboard.yml
+  - grafana-config.yml

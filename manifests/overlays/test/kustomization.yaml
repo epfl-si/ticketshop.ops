@@ -30,7 +30,14 @@ patches:
         value: 1
   - target:
       kind: GrafanaFolder
-      name: svc0049-folder
+      name: grafana-folder
+    patch: |-
+      - op: replace
+        path: /spec/instanceSelector/matchLabels/dashboards
+        value: grafana-test
+  - target:
+      kind: GrafanaDashboard
+      name: grafana-dashboard
     patch: |-
       - op: replace
         path: /spec/instanceSelector/matchLabels/dashboards
