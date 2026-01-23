@@ -14,3 +14,4 @@ resources:
   - probe.yaml
   - grafana.yaml
   - grafana-dashboard.yaml
+  - grafana-config.yaml

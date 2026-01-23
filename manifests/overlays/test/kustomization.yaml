@@ -68,11 +68,6 @@ configMapGenerator:
   - name: grafana-vars
     literals:
       - namespace=svc0049t-ticketshop
-  - name: grafana-config
-    files:
-      - json=../../base/monitoring/grafana-dashboard-template.json
-    literals:
-      - NAMESPACE=svc0049t-ticketshop
 
 replacements:
   - source:
