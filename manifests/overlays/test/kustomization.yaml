@@ -82,3 +82,4 @@ replacements:
           - data.json
         options:
           delimiter: "NAMESAPCE"
+          replaceAll: true
