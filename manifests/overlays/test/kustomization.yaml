@@ -79,6 +79,6 @@ replacements:
           kind: ConfigMap
           name: grafana-config
         fieldPaths:
-          - data.json
+          - "data.[data.json]"
         options:
           delimiter: "NAMESPACE"
