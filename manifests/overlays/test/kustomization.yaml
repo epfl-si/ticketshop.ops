@@ -81,4 +81,4 @@ replacements:
         fieldPaths:
           - data.json
         options:
-          delimiter: "{{ namespace }}"
+          delimiter: "NAMESAPCE"
