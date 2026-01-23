@@ -94,7 +94,7 @@
             "uid": "73a57e8b-7679-4a18-915c-292f143448c7"
           },
           "editorMode": "code",
-          "expr": "-(time() - max(cnpg_collector_last_available_backup_timestamp{namespace=\"NAMESAPCE\"}))",
+          "expr": "-(time() - max(cnpg_collector_last_available_backup_timestamp{namespace=\"NAMESPACE\"}))",
           "range": true,
           "refId": "A"
         }
@@ -191,7 +191,7 @@
             "uid": "73a57e8b-7679-4a18-915c-292f143448c7"
           },
           "editorMode": "code",
-          "expr": "sum by (pod) (container_cpu_usage_seconds_total:sum_rate5m{namespace=\"NAMESAPCE\"})",
+          "expr": "sum by (pod) (container_cpu_usage_seconds_total:sum_rate5m{namespace=\"NAMESPACE\"})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -303,7 +303,7 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum by(structured_status) (count_over_time({k8s_namespace_name=\"NAMESAPCE\"} | json | structured_status != `` | structured_action =~ `(artifactServer)` [$__auto]))",
+          "expr": "sum by(structured_status) (count_over_time({k8s_namespace_name=\"NAMESPACE\"} | json | structured_status != `` | structured_action =~ `(artifactServer)` [$__auto]))",
           "legendFormat": "method",
           "queryType": "instant",
           "refId": "A"
@@ -448,7 +448,7 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum by(structured_status) (\n  count_over_time(\n    {k8s_namespace_name=\"NAMESAPCE\"}\n    | json\n    | structured_action =`artifactServer`\n    | structured_status != ``\n    [$__auto]\n  )\n)",
+          "expr": "sum by(structured_status) (\n  count_over_time(\n    {k8s_namespace_name=\"NAMESPACE\"}\n    | json\n    | structured_action =`artifactServer`\n    | structured_status != ``\n    [$__auto]\n  )\n)",
           "legendFormat": "{{structured_status}}",
           "queryType": "range",
           "refId": "A"
@@ -492,7 +492,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{k8s_namespace_name=\"NAMESAPCE\"} | json | structured_method != `` | structured_action =`artifactServer` | structured_status != `` | line_format `{{.structured_soap}}` | regexp \"<errorMessage>(?P<err>[^<]+)</errorMessage>\" | line_format `{{.structured_timestamp}} - {{.structured_ip}} {{.structured_method}} {{.structured_status}} {{.structured_endpoint}} {{.err}}`",
+          "expr": "{k8s_namespace_name=\"NAMESPACE\"} | json | structured_method != `` | structured_action =`artifactServer` | structured_status != `` | line_format `{{.structured_soap}}` | regexp \"<errorMessage>(?P<err>[^<]+)</errorMessage>\" | line_format `{{.structured_timestamp}} - {{.structured_ip}} {{.structured_method}} {{.structured_status}} {{.structured_endpoint}} {{.err}}`",
           "queryType": "range",
           "refId": "A"
         }
@@ -630,7 +630,7 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum by(structured_status) (count_over_time({k8s_namespace_name=\"NAMESAPCE\"} | json | structured_status != `` | structured_action =~ `(makeApiCall)` [$__auto]))",
+          "expr": "sum by(structured_status) (count_over_time({k8s_namespace_name=\"NAMESPACE\"} | json | structured_status != `` | structured_action =~ `(makeApiCall)` [$__auto]))",
           "legendFormat": "method",
           "queryType": "instant",
           "refId": "A"
@@ -775,7 +775,7 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum by(structured_status) (\n  count_over_time(\n    {k8s_namespace_name=\"NAMESAPCE\"}\n    | json\n    | structured_action =`makeApiCall`\n    [$__auto]\n  )\n)",
+          "expr": "sum by(structured_status) (\n  count_over_time(\n    {k8s_namespace_name=\"NAMESPACE\"}\n    | json\n    | structured_action =`makeApiCall`\n    [$__auto]\n  )\n)",
           "legendFormat": "{{structured_status}}",
           "queryType": "range",
           "refId": "A"
@@ -818,7 +818,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{k8s_namespace_name=\"NAMESAPCE\"} | json | structured_method != `` | structured_action =`makeApiCall` | line_format `{{.structured_timestamp }} - {{.structured_method}} {{.structured_status}} {{.structured_url}}`",
+          "expr": "{k8s_namespace_name=\"NAMESPACE\"} | json | structured_method != `` | structured_action =`makeApiCall` | line_format `{{.structured_timestamp }} - {{.structured_method}} {{.structured_status}} {{.structured_url}}`",
           "queryType": "range",
           "refId": "A"
         }
@@ -941,7 +941,7 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum by(structured_error) (\n  count_over_time(\n    {k8s_namespace_name=\"NAMESAPCE\"}\n    | json\n    | structured_error != ``\n    [$__auto]\n  )\n)",
+          "expr": "sum by(structured_error) (\n  count_over_time(\n    {k8s_namespace_name=\"NAMESPACE\"}\n    | json\n    | structured_error != ``\n    [$__auto]\n  )\n)",
           "legendFormat": "{{structured_error}}",
           "queryType": "range",
           "refId": "A"
@@ -983,7 +983,7 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{k8s_namespace_name=\"NAMESAPCE\"} | json | structured_error != `` | line_format \"{{.structured_timestamp}} - <sciper:{{.structured_uniqueId}}> [{{.structured_type}}] {{.structured_action}}: {{.structured_error}}\"",
+          "expr": "{k8s_namespace_name=\"NAMESPACE\"} | json | structured_error != `` | line_format \"{{.structured_timestamp}} - <sciper:{{.structured_uniqueId}}> [{{.structured_type}}] {{.structured_action}}: {{.structured_error}}\"",
           "queryType": "range",
           "refId": "A"
         }

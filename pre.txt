@@ -1,0 +1,27 @@
+NAME                                             READY   STATUS    RESTARTS   AGE
+pod/ticketshop-559c966d7-mvzj9                   1/1     Running   0          78m
+pod/ticketshop-559c966d7-v99rg                   1/1     Running   0          54d
+pod/ticketshop-open-deployment-5c4db9489-lzdk7   1/1     Running   0          35d
+
+NAME                         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+service/ticketshop-open      ClusterIP   10.10.226.50   <none>        8080/TCP   35d
+service/ticketshop-service   ClusterIP   10.10.88.26    <none>        8080/TCP   231d
+
+NAME                                         READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/ticketshop                   2/2     2            2           231d
+deployment.apps/ticketshop-open-deployment   1/1     1            1           35d
+
+NAME                                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/ticketshop-547f66f8dd                  0         0         0       188d
+replicaset.apps/ticketshop-559c966d7                   2         2         2       166d
+replicaset.apps/ticketshop-5b69f6bbc4                  0         0         0       231d
+replicaset.apps/ticketshop-5cfff6b677                  0         0         0       203d
+replicaset.apps/ticketshop-5d99bb7d89                  0         0         0       231d
+replicaset.apps/ticketshop-6b4bb955bd                  0         0         0       229d
+replicaset.apps/ticketshop-7698b77655                  0         0         0       229d
+replicaset.apps/ticketshop-7db668bc88                  0         0         0       188d
+replicaset.apps/ticketshop-open-deployment-5c4db9489   1         1         1       35d
+
+NAME                                             HOST/PORT                     PATH   SERVICES             PORT       TERMINATION     WILDCARD
+route.route.openshift.io/ticketshop-open-route   ticketshop-open.fsd.epfl.ch          ticketshop-open      http       edge/Redirect   None
+route.route.openshift.io/ticketshop.epfl.ch      ticketshop.epfl.ch                   ticketshop-service   8080-tcp   edge/Redirect   None

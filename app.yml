@@ -1,7 +1,7 @@
 project: "svc0049"
 source:
   repoURL: https://github.com/epfl-si/ticketshop.ops.git
-  targetRevision: main
+  targetRevision: feature/next
   path: "manifests/overlays/prod"
 destination:
   server: https://kubernetes.default.svc

@@ -263,18 +263,6 @@ spec:
             description: >-
               PostgreSQL pod {{ $labels.pod }} memory usage is {{ $value | humanizePercentage }}.
 
-        - alert: "CNPGCollectionErrors"
-          expr: >
-            cnpg_collector_last_collection_error{namespace="$(namespace)"} > 0
-          for: 5m
-          labels:
-            severity: warning
-            app: "database"
-          annotations:
-            summary: "CloudNativePG metrics collection errors"
-            description: >-
-              Metrics collector experiencing errors on {{ $labels.pod }}.
-
         - alert: "CNPGBlockedQueries"
           expr: >
             cnpg_backends_waiting_total{namespace="$(namespace)"} > 5

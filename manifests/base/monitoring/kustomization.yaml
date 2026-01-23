@@ -14,8 +14,3 @@ resources:
   - probe.yaml
   - grafana.yaml
   - grafana-dashboard.yaml
-
-configMapGenerator:
-  - name: grafana-config
-    files:
-      - json=grafana-dashboard-template.json

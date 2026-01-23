@@ -1,0 +1,6 @@
+{
+    "yaml.schemas": {
+        "kubernetes://schema/monitoring.coreos.com/v1beta1@alertmanagerconfig": "file:///home/duriaux/epfl-si/ticketshop.ops/manifests/base/monitoring/alertmanager.yaml"
+    },
+    "ansible.python.interpreterPath": "/bin/python"
+}
