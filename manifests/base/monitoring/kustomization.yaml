@@ -15,7 +15,6 @@ resources:
   - grafana.yaml
   - grafana-dashboard.yaml
 
-
 configMapGenerator:
   - name: grafana-config
     files:

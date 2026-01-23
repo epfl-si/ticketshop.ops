@@ -64,10 +64,16 @@ patches:
         path: /spec/endpoints/0/params/target/0
         value: https://test-ticketshop.epfl.ch
 
+configMapGenerator:
+  - name: grafana-vars
+    literals:
+      - namespace=svc0049t-ticketshop
+
 replacements:
   - source:
-      kind: Namespace
-      fieldPath: metadata.name
+      kind: ConfigMap
+      name: grafana-vars
+      fieldPath: data.namespace
     targets:
       - select:
           kind: ConfigMap
