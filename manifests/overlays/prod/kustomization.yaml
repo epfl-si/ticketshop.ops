@@ -63,3 +63,4 @@ patches:
       - op: replace
         path: /spec/endpoints/0/params/target/0
         value: https://ticketshop.epfl.ch
+
