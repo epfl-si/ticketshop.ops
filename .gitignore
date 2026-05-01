@@ -210,4 +210,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+.vscode/
+
 # End of https://www.toptal.com/developers/gitignore/api/perl,python,macos
