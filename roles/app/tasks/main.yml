@@ -1,8 +1,0 @@
-- name: Ensure pull secret
-  ansible.builtin.include_tasks:
-    file: pull.yml
-    apply:
-      tags:
-        - app.pull
-  tags:
-    - app.pull
