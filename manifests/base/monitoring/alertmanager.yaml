@@ -1,0 +1,53 @@
+apiVersion: monitoring.coreos.com/v1beta1
+kind: AlertmanagerConfig
+metadata:
+  name: alertmanager-telegram
+spec:
+  route:
+    receiver: "telegram"
+    groupWait: 1s
+    groupInterval: 3s
+    groupBy: ["..."]
+  receivers:
+    - name: "telegram"
+      telegramConfigs:
+        - botToken:
+            name: telegram-bot-token
+            key: BOT_TOKEN
+          chatID: 0
+          parseMode: "Markdown"
+          message: |
+            {{ range $i, $alert := .Alerts }}
+            {{- if $i }}---
+            {{ end }}
+            {{- if eq $alert.Status "firing" }}
+              {{- if eq $alert.Labels.severity "critical" }}
+            🚨 *ALERT CRITICAL* 🚨
+              {{- else if eq $alert.Labels.severity "warning" }}
+            ⚠️ *ALERT WARNING* ⚠️
+              {{- else if eq $alert.Labels.severity "info" }}
+            ℹ️ *ALERT INFO* ℹ️
+              {{- end }}
+            {{- else if eq $alert.Status "resolved" }}
+              {{- if eq $alert.Labels.severity "critical" }}
+            ✅ *RESOLVED CRITICAL* ✅
+              {{- else if eq $alert.Labels.severity "warning" }}
+            ✅ *RESOLVED WARNING* ✅
+              {{- else if eq $alert.Labels.severity "info" }}
+            ✅ *RESOLVED INFO* ✅
+              {{- end }}
+            {{- end }}
+            *Issue:* {{ $alert.Annotations.summary }}
+            {{- if $alert.Labels.pod }}
+            *Pod:* {{ $alert.Labels.pod }}
+            {{- end }}
+            {{- if $alert.Labels.namespace }}
+            *Namespace:* {{ $alert.Labels.namespace }}
+            {{- end }}
+            {{- if $alert.Labels.job }}
+            *Job:* {{ $alert.Labels.job }}
+            {{- end }}
+            *Details:* {{ $alert.Annotations.description }}
+            *Started:* {{ $alert.StartsAt.Format "2006-01-02 15:04:05" }} UTC
+            {{ end }}
+          sendResolved: true

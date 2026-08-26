@@ -1,0 +1,17 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: ticketshop
+    route: public
+  name: ticketshop
+spec:
+  to:
+    kind: Service
+    name: ticketshop
+    weight: 100
+  port:
+    targetPort: web-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

@@ -1,0 +1,314 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ticketshop-alerts
+  labels:
+    app: ticketshop
+spec:
+  groups:
+    - name: ticketshop-pod-alerts
+      rules:
+        - alert: "TicketshopPodRestartingTooOften"
+          expr: >
+            increase(kube_pod_container_status_restarts_total{namespace="$(namespace)", pod=~"ticketshop-.*"}[30m]) > 3
+          for: 5m
+          labels:
+            severity: critical
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop application pod restarting too often"
+            description: >-
+              The Ticketshop application pod has restarted more than 3 times in the last 30 minutes.
+
+        - alert: "TicketshopPodMissing"
+          expr: >
+            absent(kube_pod_info{namespace="$(namespace)", pod=~"ticketshop-.*"}) == 1
+          for: 15s
+          labels:
+            severity: critical
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop application pod is missing"
+            description: >-
+              No Ticketshop application pod is running for more than 15 seconds.
+
+        - alert: "TicketshopPodNotReady"
+          expr: >
+            sum by (pod) (kube_pod_status_phase{namespace="$(namespace)", pod=~"ticketshop-.*", phase=~"Running|Pending"}) > 0
+            and
+            sum by (pod) (kube_pod_status_ready{namespace="$(namespace)", pod=~"ticketshop-.*", condition="true"}) == 0
+          for: 45s
+          labels:
+            severity: critical
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop application pod is not ready"
+            description: >-
+              The Ticketshop application pod is running but not ready for more than 45 seconds.
+
+        - alert: "TicketshopHighMemoryUsage"
+          expr: >
+            (container_memory_usage_bytes{namespace="$(namespace)", pod=~"ticketshop-.*"} / container_spec_memory_limit_bytes{namespace="$(namespace)", pod=~"ticketshop-.*"}) * 100 > 85
+          for: 5m
+          labels:
+            severity: warning
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop application pod high memory usage"
+            description: >-
+              The Ticketshop application pod {{ $labels.pod }} is using more than 85% of its memory limit for more than 5 minutes.
+
+        - alert: "TicketshopHighCPUUsage"
+          expr: >
+            (rate(container_cpu_usage_seconds_total{namespace="$(namespace)", pod=~"ticketshop-.*"}[5m]) / container_spec_cpu_quota{namespace="$(namespace)", pod=~"ticketshop-.*"} * container_spec_cpu_period{namespace="$(namespace)", pod=~"ticketshop-.*"}) * 100 > 80
+          for: 5m
+          labels:
+            severity: warning
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop application pod high CPU usage"
+            description: >-
+              The Ticketshop application pod {{ $labels.pod }} is using more than 80% of its CPU limit for more than 5 minutes.
+
+        - alert: "TicketshopPodCrashLooping"
+          expr: >
+            rate(kube_pod_container_status_restarts_total{namespace="$(namespace)", pod=~"ticketshop-.*"}[15m]) > 0
+          for: 5m
+          labels:
+            severity: critical
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop application pod is crash looping"
+            description: >-
+              The Ticketshop application pod {{ $labels.pod }} is in a crash loop, restarting continuously.
+
+        - alert: "TicketshopPodOOMKilled"
+          expr: >
+            (kube_pod_container_status_last_terminated_reason{namespace="$(namespace)", pod=~"ticketshop-.*", reason="OOMKilled"} == 1)
+          for: 1m
+          labels:
+            severity: critical
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop application pod killed due to OOM"
+            description: >-
+              The Ticketshop application pod {{ $labels.pod }} was killed due to Out Of Memory.
+
+        - alert: "TicketshopPodImagePullError"
+          expr: >
+            kube_pod_container_status_waiting_reason{namespace="$(namespace)", pod=~"ticketshop-.*", reason=~"ImagePullBackOff|ErrImagePull"} == 1
+          for: 5m
+          labels:
+            severity: warning
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop application pod image pull error"
+            description: >-
+              The Ticketshop application pod {{ $labels.pod }} cannot pull its container image.
+
+        - alert: "TicketshopPodPending"
+          expr: >
+            kube_pod_status_phase{namespace="$(namespace)", pod=~"ticketshop-.*", phase="Pending"} == 1
+          for: 10m
+          labels:
+            severity: warning
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop application pod stuck in pending state"
+            description: >-
+              The Ticketshop application pod {{ $labels.pod }} has been in pending state for more than 10 minutes.
+    - name: cloudnativepg-alerts
+      rules:
+        - alert: "CNPGPodNotReady"
+          expr: >
+            kube_pod_container_status_ready{container="postgres", namespace="$(namespace)", pod=~".*-[0-9]+$"} == 0
+          for: 2m
+          labels:
+            severity: critical
+            app: "database"
+          annotations:
+            summary: "CloudNativePG pod not ready"
+            description: >-
+              PostgreSQL pod {{ $labels.pod }} is not ready.
+
+        - alert: "CNPGReplicationLag"
+          expr: >
+            cnpg_pg_replication_lag{namespace="$(namespace)"} > 60
+          for: 5m
+          labels:
+            severity: warning
+            app: "database"
+          annotations:
+            summary: "CloudNativePG replication lag detected"
+            description: >-
+              PostgreSQL replica {{ $labels.pod }} has replication lag of {{ $value }} seconds.
+
+        - alert: "CNPGNoHealthyReplicas"
+          expr: >
+            sum(cnpg_pg_replication_streaming_replicas{namespace="$(namespace)"} - cnpg_pg_replication_is_wal_receiver_up{namespace="$(namespace)"}) != 0
+          for: 5m
+          labels:
+            severity: critical
+            app: "database"
+          annotations:
+            summary: "CloudNativePG has no healthy replicas"
+            description: >-
+              Cluster {{ $labels.cluster }} has no available replicas for failover.
+
+        - alert: "CNPGHighConnectionUsage"
+          expr: >
+            (sum by (pod, namespace) (cnpg_backends_total{namespace="$(namespace)"}) / sum by (pod, namespace) (cnpg_pg_settings_setting{name="max_connections", namespace="$(namespace)"})) > 0.80
+          for: 5m
+          labels:
+            severity: warning
+            app: "database"
+          annotations:
+            summary: "CloudNativePG high connection usage"
+            description: >-
+              PostgreSQL instance {{ $labels.pod }} is using {{ $value | humanizePercentage }} of max connections.
+
+        - alert: "CNPGHighDiskUsage"
+          expr: >
+            max by (persistentvolumeclaim) (1 - kubelet_volume_stats_available_bytes{namespace="$(namespace)"} / kubelet_volume_stats_capacity_bytes{namespace="$(namespace)"}) > 0.85
+          for: 10m
+          labels:
+            severity: warning
+            app: "database"
+          annotations:
+            summary: "CloudNativePG high disk usage"
+            description: >-
+              Volume {{ $labels.persistentvolumeclaim }} disk usage is {{ $value | humanizePercentage }}.
+
+        - alert: "CNPGBackupMissing"
+          expr: >
+            (time() - max(cnpg_collector_last_available_backup_timestamp{namespace="$(namespace)"}) by (cluster)) > 108000
+          for: 5m
+          labels:
+            severity: critical
+            app: "database"
+          annotations:
+            summary: "Last CloudNativePG backup is older than 30 hours"
+            description: >-
+              Last backup for cluster {{ $labels.cluster }} is older than 30 hours.
+
+        - alert: "CNPGLongRunningTransaction"
+          expr: >
+            cnpg_backends_max_tx_duration_seconds{namespace="$(namespace)"} > 3600
+          for: 10m
+          labels:
+            severity: warning
+            app: "database"
+          annotations:
+            summary: "CloudNativePG long running transaction"
+            description: >-
+              PostgreSQL instance {{ $labels.pod }} has a transaction running for {{ $value | humanizeDuration }}.
+
+        - alert: "CNPGDeadlocks"
+          expr: >
+            rate(cnpg_pg_stat_database_deadlocks{namespace="$(namespace)", datname=""}[5m]) > 0
+          for: 5m
+          labels:
+            severity: warning
+            app: "database"
+          annotations:
+            summary: "CloudNativePG deadlocks detected"
+            description: >-
+              PostgreSQL instance {{ $labels.pod }} is experiencing deadlocks.
+
+        - alert: "CNPGHighWraparoundRisk"
+          expr: >
+            max by (pod, datname) (cnpg_pg_database_xid_age{namespace="$(namespace)"}) > 1000000000
+          for: 10m
+          labels:
+            severity: critical
+            app: "database"
+          annotations:
+            summary: "CloudNativePG high transaction wraparound risk"
+            description: >-
+              Database {{ $labels.datname }} on {{ $labels.pod }} is approaching transaction wraparound (age: {{ $value }}).
+
+        - alert: "CNPGPodMissing"
+          expr: >
+            absent(cnpg_collector_up{namespace="$(namespace)"}) == 1
+          for: 2m
+          labels:
+            severity: critical
+            app: "database"
+          annotations:
+            summary: "CloudNativePG cluster missing"
+            description: >-
+              No CloudNativePG instances found in namespace $(namespace).
+
+        - alert: "CNPGHighCPUUsage"
+          expr: >
+            (sum by (pod) (node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace="$(namespace)", pod=~".*-[0-9]+$"}) / sum by (pod) (kube_pod_container_resource_requests{namespace="$(namespace)", resource="cpu", pod=~".*-[0-9]+$"})) > 0.80
+          for: 10m
+          labels:
+            severity: warning
+            app: "database"
+          annotations:
+            summary: "CloudNativePG high CPU usage"
+            description: >-
+              PostgreSQL pod {{ $labels.pod }} CPU usage is {{ $value | humanizePercentage }}.
+
+        - alert: "CNPGHighMemoryUsage"
+          expr: >
+            (sum by (pod) (container_memory_working_set_bytes{namespace="$(namespace)", pod=~".*-[0-9]+$", container!="", image!=""}) / sum by (pod) (kube_pod_container_resource_requests{namespace="$(namespace)", resource="memory", pod=~".*-[0-9]+$"})) > 0.85
+          for: 10m
+          labels:
+            severity: warning
+            app: "database"
+          annotations:
+            summary: "CloudNativePG high memory usage"
+            description: >-
+              PostgreSQL pod {{ $labels.pod }} memory usage is {{ $value | humanizePercentage }}.
+
+        - alert: "CNPGBlockedQueries"
+          expr: >
+            cnpg_backends_waiting_total{namespace="$(namespace)"} > 5
+          for: 10m
+          labels:
+            severity: warning
+            app: "database"
+          annotations:
+            summary: "CloudNativePG blocked queries detected"
+            description: >-
+              PostgreSQL instance {{ $labels.pod }} has {{ $value }} blocked queries.
+
+    - name: ticketshop-url-monitoring
+      rules:
+        - alert: "TicketshopURLSlowResponse"
+          expr: >
+            probe_duration_seconds{service="ticketshop"} > 5
+          for: 2m
+          labels:
+            severity: warning
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop URL slow response"
+            description: >-
+              The Ticketshop URL {{ $labels.target_url }} is responding slowly ({{ $value }}s).
+
+        - alert: "TicketshopURLCertificateExpiry"
+          expr: >
+            probe_ssl_earliest_cert_expiry{service="ticketshop"} - time() < 86400 * 7
+          for: 1m
+          labels:
+            severity: warning
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop SSL certificate expiring soon"
+            description: >-
+              SSL certificate for {{ $labels.target_url }} expires in {{ $value | humanizeDuration }}.
+
+        - alert: "TicketshopURLUnexpectedStatusCode"
+          expr: >
+            probe_http_status_code{service="ticketshop"} != 200
+          for: 1m
+          labels:
+            severity: critical
+            app: "ticketshop"
+          annotations:
+            summary: "Ticketshop URL unexpected status code"
+            description: >-
+              The Ticketshop URL {{ $labels.target_url }} returned invalide status code {{ $value }}.

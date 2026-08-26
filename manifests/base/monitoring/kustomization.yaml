@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+resources:
+  - servicemonitor.yaml
+  - prometheusrule.yaml
+  - alertmanager.yaml
+  - blackbox-exporter.yaml
+  - blackbox-service.yaml
+  - blackbox-config.yaml
+  - probe.yaml
+  - grafana.yaml
+  # - grafana-dashboard.yaml
+  # - grafana-config.yaml

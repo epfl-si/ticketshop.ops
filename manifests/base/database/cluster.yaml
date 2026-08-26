@@ -1,0 +1,49 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-cluster
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  monitoring:
+    enablePodMonitor: true
+  storage:
+    size: 5Gi
+    storageClass: sc-gold
+  enableSuperuserAccess: true
+  enablePDB: false
+  backup:
+    barmanObjectStore:
+      destinationPath: "s3://xxx"
+      endpointURL: "https://s3.epfl.ch"
+      s3Credentials:
+        accessKeyId:
+          name: s3-credentials
+          key: AWS_ACCESS_KEY
+        secretAccessKey:
+          name: s3-credentials
+          key: AWS_SECRET
+  env:
+    - name: AWS_REQUEST_CHECKSUM_CALCULATION
+      value: WHEN_REQUIRED
+    - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+      value: WHEN_REQUIRED
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "1836Mi"
+    limits:
+      memory: "1836Mi"
+  postgresql:
+    parameters:
+      max_connections: "600"
+      max_slot_wal_keep_size: 3GB
+      shared_buffers: 256MB
+  managed:
+    roles:
+      - name: ticketshop-user
+        ensure: present
+        login: true
+        superuser: false
+        passwordSecret:
+          name: ticketshop-db-credentials

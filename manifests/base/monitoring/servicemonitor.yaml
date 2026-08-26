@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ticketshop-monitor
+  labels:
+    app: ticketshop
+spec:
+  selector:
+    matchLabels:
+      app: ticketshop
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

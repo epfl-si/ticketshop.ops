@@ -1,0 +1,80 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: svc0049t-ticketshop
+
+resources:
+  - ../../base
+
+patches:
+  - target:
+      kind: Route
+      name: ticketshop
+    patch: |-
+      - op: replace
+        path: /spec/host
+        value: test-ticketshop.epfl.ch
+  - target:
+      kind: Deployment
+      name: ticketshop
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+  - target:
+      kind: PodDisruptionBudget
+      name: ticketshop-pdb
+    patch: |-
+      - op: replace
+        path: /spec/maxUnavailable
+        value: 1
+  - target:
+      kind: GrafanaFolder
+      name: grafana-folder
+    patch: |-
+      - op: replace
+        path: /spec/instanceSelector/matchLabels/dashboards
+        value: grafana-test
+  - target:
+      kind: GrafanaDashboard
+      name: grafana-dashboard
+    patch: |-
+      - op: replace
+        path: /spec/instanceSelector/matchLabels/dashboards
+        value: grafana-test
+  - target:
+      kind: AlertmanagerConfig
+      name: alertmanager-telegram
+    patch: |-
+      - op: replace
+        path: /spec/receivers/0/telegramConfigs/0/chatID
+        value: -4675218287
+  - target:
+      kind: Cluster
+      name: postgres-cluster
+    patch: |-
+      - op: replace
+        path: /spec/backup/barmanObjectStore/destinationPath
+        value: "s3://svc0049-58ebfa5babe5dae8024a5bad3f33d137"
+  - target:
+      kind: ServiceMonitor
+      name: ticketshop-probe
+    patch: |-
+      - op: replace
+        path: /spec/endpoints/0/params/target/0
+        value: https://test-ticketshop.epfl.ch
+
+replacements:
+  - source:
+      kind: ServiceAccount
+      name: ticketshop
+      fieldPath: metadata.namespace
+    targets:
+      - select:
+          kind: ConfigMap
+          name: grafana-config
+        fieldPaths:
+          - "data.[data.json]"
+        options:
+          delimiter: NAMESPACE
+          index: 0
